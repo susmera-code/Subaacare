@@ -1,6 +1,6 @@
 import { useAuth } from "./useAuth";
 import { logout } from "./logout";
-import Subaa_Logo from "./assets/Subaa_Logo.png";
+import Subaa_Logo from "../assets/Subaa_Logo.png";
 import { supabase } from './supabaseClient';
 const Navbar = () => {
     const { user, role, loading } = useAuth();
