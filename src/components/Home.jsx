@@ -1,5 +1,4 @@
-import Patient from "./Patient";
-import { useState } from "react";
+import Image1 from "../assets/Image1.png";
 function Home() {
     return (
         <div className="container">
@@ -16,7 +15,7 @@ function Home() {
                     {/* Right Column – Image */}
                     <div className="col-md-6">
                         <img
-                            src="src/assets/Image1.png"     // <— Replace with your actual image path
+                            src={Image1}   // <— Replace with your actual image path
                             className="img-fluid rounded-2 h-100 w-100 object-fit-cover"
                             alt="Family Healthcare"
                         />

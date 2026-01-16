@@ -27,7 +27,7 @@ const Navbar = () => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light pt-0 pb-0 nav-style">
             <div className="container-fluid">
                 <a href="#" target="_blank" className="navbar-brand mr-2">
-                    <img src={Subaa_Logo} alt="Logo" className="logo" style={{ height: "3.5rem", padding: "0" }} />;
+                    <img src={Subaa_Logo} alt="Logo" className="logo" style={{ height: "3.5rem", padding: "0" }} />
                 </a>
                 <div className="text-start">
                     <a className="navbar-brand fw-bold text-blue" href="#/home">Subaa Care</a>
