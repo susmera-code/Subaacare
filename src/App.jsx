@@ -18,7 +18,6 @@ import ProfessionalsRegister from './components/Professional';
 import ProfessionalStatus from './components/ProfessionalStatus';
 import MyAppointments from './components/MyAppointments';
 import PatientProfile from './components/PatientProfile';
-import Subaa_Logo from "./assets/Subaa_Logo.png";
 
 
 function App() {
@@ -72,7 +71,6 @@ function App() {
           </Routes>
         </Router>
       </div>
-      <img src={Subaa_Logo} alt="Logo" />;
     </>
   )
 
