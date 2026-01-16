@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import CountryCodeSelect from "./CountryCodeSelect";
 import { initRegisterValidation } from "./registerValidation";
+import Terms from "./Terms"; // ✅ default export
+
 
 export default function Register() {
   const [isProfessional, setIsProfessional] = useState(false);
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
+  const [termsOpen, setTermsOpen] = useState(false);
 
   useEffect(() => {
     initRegisterValidation(isProfessional);
@@ -143,7 +146,26 @@ export default function Register() {
                 </div>
                 <small className="error" id="confirmPasswordError"></small>
               </div>
-
+              <div className="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="termsPatient"
+                />
+                <label className="form-check-label d-flex fs-14 p-t-1" htmlFor="termsPatient">
+                  I accept the{" "}
+                  <a className="ml-5"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTermsOpen(true);
+                    }}
+                  >
+                    Terms & Conditions
+                  </a>
+                </label>
+              </div>
+              <small className="error text-danger" id="termsError"></small>
               <button className="btn btn-primary w-100">
                 Register
               </button>
@@ -268,6 +290,26 @@ export default function Register() {
               </div>
               <small className="error" id="proConfirmPasswordError"></small>
             </div>
+            <div className="mb-3 form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="termsPro"
+              />
+              <label className="form-check-label d-flex fs-14 p-t-1" htmlFor="termsPro">
+                I accept the{" "}
+                <a className="ml-5"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setTermsOpen(true);
+                  }}
+                >
+                  Terms & Conditions
+                </a>
+              </label>
+            </div>
+            <small className="error text-danger" id="proTermsError"></small>
             <button id="professionalRegisterBtn" className="btn btn-primary w-100">
               Register
             </button>
@@ -280,6 +322,7 @@ export default function Register() {
           </div>
         </div>
       }
+      <Terms isOpen={termsOpen} onClose={() => setTermsOpen(false)} />
     </div>
   );
 }

@@ -18,6 +18,7 @@ import ProfessionalsRegister from './components/Professional';
 import ProfessionalStatus from './components/ProfessionalStatus';
 import MyAppointments from './components/MyAppointments';
 import PatientProfile from './components/PatientProfile';
+import Terms from './components/Terms';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/professionalstatus" element={<ProfessionalStatus />} />
             <Route path="/professional" element={<ProfessionalsRegister />} />
             <Route path="/myappointments" element={<MyAppointments />} />

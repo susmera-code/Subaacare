@@ -251,7 +251,9 @@ hr {
   width: 220px;
   /* fixed width */
 }
-
+.form-check-input{
+  border: 1.2px solid #848080;
+}
 .edit-icon{
   font-size: 25px;
   color: rgb(8 73 163);
@@ -259,4 +261,10 @@ hr {
 p{
      margin-top: revert !important;
     margin-bottom: revert !important;
+}
+.ml-5{
+  margin-left: 5px;
+}
+.p-t-1{
+  padding-top: 1px;
 }

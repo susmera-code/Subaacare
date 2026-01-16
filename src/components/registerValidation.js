@@ -28,11 +28,12 @@ export function initRegisterValidation(isProfessional, selectedState) {
       el.addEventListener("change", clearFormError); // for selects
     });
   };
-const isValidEmail = (email) => {
-  // Simple regex for basic email validation
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
-};
+  const isValidEmail = (email) => {
+    // Simple regex for basic email validation
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
 
   // ---------------- PATIENT ----------------
   if (!isProfessional) {
@@ -45,6 +46,10 @@ const isValidEmail = (email) => {
       "password",
       "confirmPassword",
     ]);
+const termsCheckbox = document.getElementById("termsPatient");
+if (termsCheckbox) {
+  termsCheckbox.addEventListener("change", clearFormError);
+}
 
     patientForm.onsubmit = async (e) => {
       e.preventDefault();
@@ -55,15 +60,22 @@ const isValidEmail = (email) => {
       const phone = document.getElementById("phone").value.trim();
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
-
+      const termsChecked = document.getElementById("termsPatient").checked;
       if (!fullName || !email || !phone || !password || !confirmPassword) {
         showFormError("All fields are required");
         return;
       }
-if (!isValidEmail(email)) {
-  showFormError("Please enter a valid email address");
-  return;
-}
+      if (!termsChecked) {
+        document.getElementById("termsError").innerText =
+          "You must accept Terms & Conditions";
+        return;
+      } else {
+        document.getElementById("termsError").innerText = "";
+      }
+      if (!isValidEmail(email)) {
+        showFormError("Please enter a valid email address");
+        return;
+      }
       if (password !== confirmPassword) {
         showFormError("Passwords do not match");
         return;
@@ -123,12 +135,12 @@ if (!isValidEmail(email)) {
       const proFullName = document.getElementById("proFullName").value.trim();
       const email = document.getElementById("proEmail").value.trim();
       const proPhone = document.getElementById("proPhone").value.trim();
-      const state = document.getElementById("state").value; 
+      const state = document.getElementById("state").value;
       const city = document.getElementById("city").value.trim();
       const category = document.getElementById("category").value;
       const password = document.getElementById("proPassword").value;
       const confirmPassword = document.getElementById("proConfirmPassword").value;
-
+      const termsChecked = document.getElementById("termsPro").checked;
       if (
         !proFullName ||
         !email ||
@@ -142,10 +154,18 @@ if (!isValidEmail(email)) {
         showFormError("All fields are required");
         return;
       }
-if (!isValidEmail(email)) {
-  showFormError("Please enter a valid email address");
-  return;
-}
+      if (!termsChecked) {
+        document.getElementById("proTermsError").innerText =
+          "You must accept Terms & Conditions";
+        return;
+      } else {
+        document.getElementById("proTermsError").innerText = "";
+      }
+
+      if (!isValidEmail(email)) {
+        showFormError("Please enter a valid email address");
+        return;
+      }
       if (password !== confirmPassword) {
         showFormError("Passwords do not match");
         return;
@@ -167,28 +187,28 @@ if (!isValidEmail(email)) {
       const userId = signInData.user.id;
 
       // Insert into professionals
-    // 🔹 INSERT PROFESSIONAL ROW (IMPORTANT)
-const { error: dbError } = await supabase
-  .from("professionals")
-  .insert({
-    id: userId,
-    full_name: proFullName,
-    email,
-    phone: proPhone,
-    state,
-    city,
-    category,
-    role: "professional",
-    profile_submitted: false,
-    status: null,
-  });
+      // 🔹 INSERT PROFESSIONAL ROW (IMPORTANT)
+      const { error: dbError } = await supabase
+        .from("professionals")
+        .insert({
+          id: userId,
+          full_name: proFullName,
+          email,
+          phone: proPhone,
+          state,
+          city,
+          category,
+          role: "professional",
+          profile_submitted: false,
+          status: null,
+        });
 
-if (dbError) {
-  showFormError(dbError.message);
-  return;
-}
+      if (dbError) {
+        showFormError(dbError.message);
+        return;
+      }
 
-alert("Professional registration successful!");
+      alert("Professional registration successful!");
 
     };
   }
