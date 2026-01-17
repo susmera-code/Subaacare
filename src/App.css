@@ -268,3 +268,6 @@ p{
 .p-t-1{
   padding-top: 1px;
 }
+.c-pointer{
+  cursor: pointer;
+}

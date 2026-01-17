@@ -86,7 +86,10 @@ const Navbar = () => {
                                 <a className="nav-link" href="/admin">Admin Panel</a>
                             </li>
                         )}
-
+                        {/* Always visible */}
+                        <li className="nav-item">
+                            <a className="nav-link" href="/aboutus">About Us</a>
+                        </li>
                         {/* Avatar Dropdown */}
                         {user && (
                             <li className="nav-item dropdown">

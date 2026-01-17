@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-
+import { startRazorpayPayment } from "../utils/razorpay";
 const MyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +55,7 @@ const MyAppointments = () => {
   };
 
 
-  
+
   // 1️⃣ Load Razorpay SDK ONCE
   const loadRazorpay = () =>
     new Promise((resolve) => {
@@ -113,7 +113,7 @@ const MyAppointments = () => {
 
     new window.Razorpay(options).open();
   };
-  
+
   if (loading) return <p>Loading your appointments...</p>;
 
   return (
@@ -156,8 +156,22 @@ const MyAppointments = () => {
                     <td>
                       {appt.status === "accepted" ? (
                         <a
-                           onClick={payNow}
-                          className="text-decoration-underline">
+                          onClick={() =>
+                            startRazorpayPayment({
+                              amount: 500,
+                              name: "John Doe",
+                              email: "john@example.com",
+                              phone: "9876543210",
+                              onSuccess: (res) => {
+                                alert("Payment successful!");
+                                console.log(res);
+                              },
+                              onFailure: () => {
+                                alert("Payment cancelled");
+                              },
+                            })
+                          }
+                          className="text-decoration-underline c-pointer">
                           Pay Now
                         </a>
                       ) : (
