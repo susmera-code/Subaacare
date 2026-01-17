@@ -159,16 +159,11 @@ const MyAppointments = () => {
                           onClick={() =>
                             startRazorpayPayment({
                               amount: 500,
-                              name: "John Doe",
-                              email: "john@example.com",
-                              phone: "9876543210",
-                              onSuccess: (res) => {
-                                alert("Payment successful!");
-                                console.log(res);
-                              },
-                              onFailure: () => {
-                                alert("Payment cancelled");
-                              },
+      name: "Test User",
+      email: "test@example.com",
+      phone: "9876543210",
+      onSuccess: () => alert("Payment success"),
+      onFailure: () => alert("Payment failed"),
                             })
                           }
                           className="text-decoration-underline c-pointer">
