@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import CountryCodeSelect from "./CountryCodeSelect";
 import { initRegisterValidation } from "./registerValidation";
 import Terms from "./Terms"; // ✅ default export
-
+import PasswordInput from "./PasswordInput";
 
 export default function Register() {
   const [isProfessional, setIsProfessional] = useState(false);
@@ -13,7 +13,6 @@ export default function Register() {
   useEffect(() => {
     initRegisterValidation(isProfessional);
   }, [isProfessional]);
-
 
   useEffect(() => {
     // Fetch India states
@@ -73,7 +72,7 @@ export default function Register() {
           <div className="login-card p-4 shadow-lg rounded-4 bg-white">
 
             <h3 className="text-center mb-1 fw-bold text-primary">Register</h3>
-            <p className="fs-12 mb-3 login-message">Welcome to Heathcare. Please login to your account.</p>
+            <p className="fs-12 mb-3 login-message text-blue">Welcome to Heathcare. Please login to your account.</p>
             <div id="formError" className="text-danger fs-14"></div>
 
             <form id="registerForm">
@@ -121,31 +120,20 @@ export default function Register() {
               </div>
 
               {/*  Password */}
-              <div className="mb-3 position-relative text-start fs-14">
-                <label className="fw-bold mb-1"> Password</label>
-                <div className="position-relative">
-                  <input
-                    type="password" id="password"
-                    className="form-control placeholder-custom"
-                    placeholder="Enter password"
-                  />
-                  <i className="bi bi-lock-fill"></i>
-                </div>
-                <small className="error" id="passwordError"></small>
-              </div>
-              {/* Confirm Password */}
-              <div className="mb-3 position-relative text-start fs-14">
-                <label className="fw-bold mb-1">Confirm Password</label>
-                <div className="position-relative">
-                  <input
-                    type="password" id="confirmPassword"
-                    className="form-control placeholder-custom"
-                    placeholder="Re-enter password"
-                  />
-                  <i className="bi bi-lock-fill"></i>
-                </div>
-                <small className="error" id="confirmPasswordError"></small>
-              </div>
+             <PasswordInput
+  id="password"
+  label="Password"
+  placeholder="Enter password"
+  errorId="passwordError"
+/>
+
+<PasswordInput
+  id="confirmPassword"
+  label="Confirm Password"
+  placeholder="Re-enter password"
+  errorId="confirmPasswordError"
+/>
+
               <div className="mb-3 form-check">
                 <input
                   type="checkbox"
@@ -265,31 +253,20 @@ export default function Register() {
             </div>
 
             {/*  Password */}
-            <div className="mb-3 position-relative text-start fs-14">
-              <label className="fw-bold mb-1"> Password</label>
-              <div className="relative">
-                <input
-                  type="password" id="proPassword"
-                  className="form-control placeholder-custom"
-                  placeholder="Enter password" />
-                <i className="bi bi-lock-fill"></i>
-              </div>
-              <small className="error" id="proPasswordError"></small>
-            </div>
+          <PasswordInput
+  id="proPassword"
+  label="Password"
+  placeholder="Enter password"
+  errorId="proPasswordError"
+/>
 
-            {/* Confirm Password */}
-            <div className="mb-3 position-relative text-start fs-14">
-              <label className="fw-bold mb-1">Confirm Password</label>
-              <div className="relative">
-                <input id="proConfirmPassword"
-                  type="password"
-                  className="form-control placeholder-custom"
-                  placeholder="Re-enter password"
-                />
-                <i className="bi bi-lock-fill"></i>
-              </div>
-              <small className="error" id="proConfirmPasswordError"></small>
-            </div>
+<PasswordInput
+  id="proConfirmPassword"
+  label="Confirm Password"
+  placeholder="Re-enter password"
+  errorId="proConfirmPasswordError"
+/>
+
             <div className="mb-3 form-check">
               <input
                 type="checkbox"

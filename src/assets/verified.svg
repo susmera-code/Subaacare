@@ -1,0 +1,24 @@
+<svg width="56" height="56" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Stronger blue → light blue gradient -->
+    <linearGradient id="shieldGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a8e4ff"></stop>
+      <stop offset="45%" stop-color="#6cc6eb"></stop>
+      <stop offset="100%" stop-color="#2f9fd3"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield -->
+  <path d="M32 4
+       C24 6 14 9 14 9
+       v20
+       c0 14 11 24 18 26
+       c7-2 18-12 18-26
+       V9
+       S40 6 32 4z" fill="url(#shieldGradient)" stroke="#1b6f9e" stroke-width="3" stroke-linejoin="round"></path>
+
+  <!-- White tick -->
+  <path d="M25 32
+       l5 5
+       10-12" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

@@ -27,11 +27,11 @@ const Navbar = () => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light pt-0 pb-0 nav-style">
             <div className="container-fluid">
                 <a href="#" target="_blank" className="navbar-brand mr-2">
-                    <img src={Subaa_Logo} alt="Logo" className="logo" style={{ height: "3.5rem", padding: "0" }} />
+                    <img src={Subaa_Logo} alt="Logo" className="logo" style={{ height: "6rem", padding: "0" }} />
                 </a>
                 <div className="text-start">
-                    <a className="navbar-brand fw-bold text-blue" href="#/home">Subaa Care</a>
-                    <p className="fs-12 text-blue mb-0 mt-0">We care those who you care</p>
+                    <a className="navbar-brand fw-bold text-blue fs-25" href="#/home">Subaa Care</a>
+                    <p className="fs-14 text-blue mb-0 mt-0 text-blue">we care of those who you care</p>
                 </div>
 
                 <button
@@ -47,13 +47,16 @@ const Navbar = () => {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav ms-auto align-items-center">
+                    <ul className="navbar-nav ms-auto align-items-center fs-18">
 
                         {/* Always visible */}
                         <li className="nav-item">
                             <a className="nav-link" href="/home">Home</a>
                         </li>
-
+                        {/* Always visible */}
+                        <li className="nav-item">
+                            <a className="nav-link" href="/aboutus">About Us</a>
+                        </li>
                         {/* NOT LOGGED IN */}
                         {!user && (
                             <>
@@ -86,10 +89,7 @@ const Navbar = () => {
                                 <a className="nav-link" href="/admin">Admin Panel</a>
                             </li>
                         )}
-                        {/* Always visible */}
-                        <li className="nav-item">
-                            <a className="nav-link" href="/aboutus">About Us</a>
-                        </li>
+
                         {/* Avatar Dropdown */}
                         {user && (
                             <li className="nav-item dropdown">
@@ -101,13 +101,13 @@ const Navbar = () => {
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
                                     style={{
-                                        width: "40px",
-                                        height: "40px",
+                                        width: "45px",
+                                        height: "45px",
                                         borderRadius: "50%",
                                         backgroundColor: "var(--bs-gray-200)",
                                         color: "#fff",
                                         fontWeight: "bold",
-                                        fontSize: "0.9rem",
+                                        fontSize: "1rem",
                                         textAlign: "center",
                                         lineHeight: "40px",
                                         cursor: "pointer",

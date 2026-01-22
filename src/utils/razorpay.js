@@ -31,4 +31,6 @@ export function startRazorpayPayment({
 
   const razorpay = new window.Razorpay(options);
   razorpay.open();
+  console.log("RAZORPAY KEY =", import.meta.env.VITE_RAZORPAY_KEY_ID);
+
 }

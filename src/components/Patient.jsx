@@ -6,7 +6,6 @@ const Patient = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -14,8 +13,24 @@ const Patient = () => {
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
+  const [states, setStates] = useState([]);
+  const [selectedState, setSelectedState] = useState("");
   const [selected, setSelected] = useState({}); // { professionalId: selectedIndex }
-
+  useEffect(() => {
+    // Fetch India states
+    fetch("https://countriesnow.space/api/v0.1/countries/states", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ country: "India" })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data?.states) {
+          setStates(data.data.states);
+        }
+      })
+      .catch((err) => console.error("Error fetching states:", err));
+  }, []);
   // Set the selected slot
   const setSelectedSlot = (professionalId, slotIndex) => {
     setSelected(prev => ({ ...prev, [professionalId]: slotIndex }));
@@ -37,8 +52,10 @@ const Patient = () => {
       const searchFrom = fromDate ? toPgTimestamp(fromDate) : null;
       const searchTo = toDate ? toPgTimestamp(toDate) : null;
 
-      let profQuery = supabase.from("professionals").select("id, state, category, email");
-      if (location) profQuery = profQuery.ilike("state", `%${location}%`);
+      let profQuery = supabase.from("professionals").select("id, full_name, skills, state, category, email");
+      if (selectedState) {
+        profQuery = profQuery.eq("state", selectedState);
+      }
       if (category) profQuery = profQuery.eq("category", category);
 
       const { data: professionals, error: profError } = await profQuery;
@@ -92,43 +109,43 @@ const Patient = () => {
   }, []);
 
   // Book an appointment (React only inserts to DB)
-const handleBook = async (professionalId) => {
-  const slotIndex = selected[professionalId];
-  if (slotIndex === undefined) return alert("Select a slot");
+  const handleBook = async (professionalId) => {
+    const slotIndex = selected[professionalId];
+    if (slotIndex === undefined) return alert("Select a slot");
 
-  const prof = results.find(p => p.id === professionalId);
-  const slot = prof.availability[slotIndex];
+    const prof = results.find(p => p.id === professionalId);
+    const slot = prof.availability[slotIndex];
 
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-    // Insert appointment
-    const { data: appointment, error } = await supabase
-      .from("appointments")
-      .insert({
-        professional_id: professionalId,
-        patient_id: user.id,
-        from_datetime: slot.from_datetime,
-        to_datetime: slot.to_datetime,
-      })
-      .select()
-      .single();
-    if (error) throw error;
+      // Insert appointment
+      const { data: appointment, error } = await supabase
+        .from("appointments")
+        .insert({
+          professional_id: professionalId,
+          patient_id: user.id,
+          from_datetime: slot.from_datetime,
+          to_datetime: slot.to_datetime,
+        })
+        .select()
+        .single();
+      if (error) throw error;
 
-    // ✅ Call public Edge Function to send email
-    await fetch('https://yzrpbocdsgmdagmqthsy.functions.supabase.co/send-appointment-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ appointment })
-    });
+      // ✅ Call public Edge Function to send email
+      await fetch('https://yzrpbocdsgmdagmqthsy.functions.supabase.co/send-appointment-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appointment })
+      });
 
-    alert("Appointment booked & email sent");
+      alert("Appointment booked & email sent");
 
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-};
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
 
 
@@ -146,13 +163,22 @@ const handleBook = async (professionalId) => {
         <div className="row text-start pb-1">
           <div className="col-md-3">
             <label className="fw-bold mb-1">Location</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
+            <div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
+
+              <select
+                id="state"
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="form-select w-100 fs-14"
+              >
+                <option value="">Select</option>
+                {states.map((st) => (
+                  <option key={st.name} value={st.name}>
+                    {st.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="col-md-3">
@@ -206,6 +232,8 @@ const handleBook = async (professionalId) => {
         <thead className="table-primary">
           <tr>
             <th>#</th>
+            <th>Name</th>
+            <th>Skills</th>
             <th>Location</th>
             <th>Role</th>
             <th>Availability</th>
@@ -216,13 +244,17 @@ const handleBook = async (professionalId) => {
         <tbody>
           {results.length === 0 ? (
             <tr>
-              <td colSpan="5" className="text-center">No results found</td>
+              <td colSpan="7" className="text-center">No results found</td>
             </tr>
           ) : (
             results.map((p, i) => (
               <tr key={p.id}>
                 <td>{i + 1}</td>
-                <td>{p.state}</td>
+                <td>{p.full_name}</td>
+                <td>{p.skills}</td>
+                <td>
+                  {typeof p.state === "string" ? p.state : p.state?.name}
+                </td>
                 <td>{p.category}</td>
                 <td>
                   {p.availability.length === 0 ? (

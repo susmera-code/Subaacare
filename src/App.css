@@ -68,8 +68,8 @@ textarea.form-control {
   border-radius: 15px !important;
 }
 
-.pt-90 {
-  padding-top: 90px;
+.pt-120 {
+  padding-top: 120px;
 }
 
 /* Login page style */
@@ -113,9 +113,11 @@ a {
   color: #6c757d;
   pointer-events: none;
 }
-.logo-text{
+
+.logo-text {
   color: #fc6266 !important;
 }
+
 .text-link {
   color: rgb(8 73 163) !important;
 }
@@ -135,9 +137,17 @@ a {
 .fs-15 {
   font-size: 15px !important;
 }
-
+.fs-16 {
+  font-size: 16px !important;
+}
 .fs-18 {
   font-size: 18px !important;
+}
+.fs-23 {
+  font-size: 23px !important;
+}
+.fs-25 {
+  font-size: 25px !important;
 }
 
 .mb-4 {
@@ -190,7 +200,9 @@ textarea {
   background-color: #fff !important;
   margin-bottom: 1rem;
 }
-
+.bg-grey{
+ background-color: #fafafa !important;;
+}
 .nav-link {
   font-size: 15px;
   color: rgb(8 73 163) !important;
@@ -251,23 +263,69 @@ hr {
   width: 220px;
   /* fixed width */
 }
-.form-check-input{
+
+.form-check-input {
   border: 1.2px solid #848080;
 }
-.edit-icon{
+
+.edit-icon {
   font-size: 25px;
   color: rgb(8 73 163);
 }
-p{
-     margin-top: revert !important;
-    margin-bottom: revert !important;
+
+p {
+  margin-top: revert !important;
+  margin-bottom: revert !important;
 }
-.ml-5{
+
+.ml-5 {
   margin-left: 5px;
 }
-.p-t-1{
+
+.p-t-1 {
   padding-top: 1px;
 }
-.c-pointer{
+
+.c-pointer {
   cursor: pointer;
+}
+
+.password-icon i {
+  font-size: 17px;
+  color: #6c757d;
+  top: 0px;
+  right: 0px;
+  position: relative;
+}
+
+.password-btn {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 9999;
+}
+.bi-check-circle-fill{
+  color: #198754;
+  font-size: 14px;
+}
+
+.hero-blur-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 58.3%;
+  width: 56px;
+  background: linear-gradient(
+    to right,
+    #ffffff 0%,
+    rgba(255,255,255,0.85) 35%,
+    rgba(255,255,255,0.4) 65%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
