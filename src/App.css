@@ -137,15 +137,19 @@ a {
 .fs-15 {
   font-size: 15px !important;
 }
+
 .fs-16 {
   font-size: 16px !important;
 }
+
 .fs-18 {
   font-size: 18px !important;
 }
+
 .fs-23 {
   font-size: 23px !important;
 }
+
 .fs-25 {
   font-size: 25px !important;
 }
@@ -187,6 +191,7 @@ a {
 .w-60 {
   width: 60%;
 }
+
 .w-70 {
   width: 70%;
 }
@@ -200,11 +205,14 @@ textarea {
   background-color: #fff !important;
   margin-bottom: 1rem;
 }
-.bg-grey{
- background-color: #fafafa !important;;
+
+.bg-grey {
+  background-color: #fafafa !important;
+  ;
 }
+
 .nav-link {
-  font-size: 15px;
+  font-size: 17px;
   color: rgb(8 73 163) !important;
 
   &.active {
@@ -308,7 +316,8 @@ p {
   cursor: pointer;
   z-index: 9999;
 }
-.bi-check-circle-fill{
+
+.bi-check-circle-fill {
   color: #198754;
   font-size: 14px;
 }
@@ -319,13 +328,11 @@ p {
   bottom: 0;
   left: 58.3%;
   width: 56px;
-  background: linear-gradient(
-    to right,
-    #ffffff 0%,
-    rgba(255,255,255,0.85) 35%,
-    rgba(255,255,255,0.4) 65%,
-    rgba(255,255,255,0) 100%
-  );
+  background: linear-gradient(to right,
+      #ffffff 0%,
+      rgba(255, 255, 255, 0.85) 35%,
+      rgba(255, 255, 255, 0.4) 65%,
+      rgba(255, 255, 255, 0) 100%);
   pointer-events: none;
   z-index: 1;
 }

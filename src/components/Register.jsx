@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import CountryCodeSelect from "./CountryCodeSelect";
 import { initRegisterValidation } from "./registerValidation";
-import Terms from "./Terms"; // ✅ default export
+import Terms from "./Terms";
 import PasswordInput from "./PasswordInput";
 
 export default function Register() {
@@ -9,6 +9,8 @@ export default function Register() {
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [termsOpen, setTermsOpen] = useState(false);
+  const [proCategory, setProCategory] = useState("");      // selected category
+  const [customCategory, setCustomCategory] = useState(""); // only for "Others"
 
   useEffect(() => {
     initRegisterValidation(isProfessional);
@@ -30,10 +32,8 @@ export default function Register() {
       .catch((err) => console.error("Error fetching states:", err));
   }, []);
 
-
   return (
     <div className="container mt-4">
-
       {/* Toggle Switch */}
       <div className="form-check form-switch mb-4">
         <div className="d-flex justify-content-center align-items-center gap-3">
@@ -120,19 +120,19 @@ export default function Register() {
               </div>
 
               {/*  Password */}
-             <PasswordInput
-  id="password"
-  label="Password"
-  placeholder="Enter password"
-  errorId="passwordError"
-/>
+              <PasswordInput
+                id="password"
+                label="Password"
+                placeholder="Enter password"
+                errorId="passwordError"
+              />
 
-<PasswordInput
-  id="confirmPassword"
-  label="Confirm Password"
-  placeholder="Re-enter password"
-  errorId="confirmPasswordError"
-/>
+              <PasswordInput
+                id="confirmPassword"
+                label="Confirm Password"
+                placeholder="Re-enter password"
+                errorId="confirmPasswordError"
+              />
 
               <div className="mb-3 form-check">
                 <input
@@ -243,29 +243,51 @@ export default function Register() {
             {/* Category field */}
             <div className="mb-3 position-relative text-start fs-14">
               <label className="fw-bold mb-1">Category</label>
-              <select id="category" className="form-select fs-14">
+
+              <select
+                id="category"
+                className="form-select fs-14 mb-3"
+                value={proCategory}
+                onChange={(e) => {
+                  setProCategory(e.target.value);
+                  if (e.target.value !== "Others") setCustomCategory(""); // reset custom
+                }}
+              >
                 <option value="">Select</option>
                 <option value="Nurse">Nurse</option>
                 <option value="Physiotherapist">Physiotherapist</option>
                 <option value="Others">Others</option>
               </select>
+              {proCategory === "Others" && (
+                <div className="mb-3 position-relative text-start fs-14">
+                  <label className="fw-bold mb-1">Specify Category</label>
+                  <input
+                    type="text"
+                    id="customCategory" // 🔹 important
+                    className="form-control placeholder-custom"
+                    placeholder="Enter your category"
+                  />
+                  <small className="error" id="customCategoryError"></small>
+                </div>
+              )}
+
               <small className="error" id="categoryError"></small>
             </div>
 
             {/*  Password */}
-          <PasswordInput
-  id="proPassword"
-  label="Password"
-  placeholder="Enter password"
-  errorId="proPasswordError"
-/>
+            <PasswordInput
+              id="proPassword"
+              label="Password"
+              placeholder="Enter password"
+              errorId="proPasswordError"
+            />
 
-<PasswordInput
-  id="proConfirmPassword"
-  label="Confirm Password"
-  placeholder="Re-enter password"
-  errorId="proConfirmPasswordError"
-/>
+            <PasswordInput
+              id="proConfirmPassword"
+              label="Confirm Password"
+              placeholder="Re-enter password"
+              errorId="proConfirmPasswordError"
+            />
 
             <div className="mb-3 form-check">
               <input

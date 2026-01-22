@@ -114,7 +114,7 @@ export default function Admin() {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody className="align-middle fs-14">
+          <tbody className="align-middle fs-15">
             {professionals.map((pro) => (
               <tr key={pro.id}>
                 <td>

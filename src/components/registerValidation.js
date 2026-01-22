@@ -46,10 +46,10 @@ export function initRegisterValidation(isProfessional, selectedState) {
       "password",
       "confirmPassword",
     ]);
-const termsCheckbox = document.getElementById("termsPatient");
-if (termsCheckbox) {
-  termsCheckbox.addEventListener("change", clearFormError);
-}
+    const termsCheckbox = document.getElementById("termsPatient");
+    if (termsCheckbox) {
+      termsCheckbox.addEventListener("change", clearFormError);
+    }
 
     patientForm.onsubmit = async (e) => {
       e.preventDefault();
@@ -141,13 +141,16 @@ if (termsCheckbox) {
       const password = document.getElementById("proPassword").value;
       const confirmPassword = document.getElementById("proConfirmPassword").value;
       const termsChecked = document.getElementById("termsPro").checked;
+      const customCategoryInput = document.getElementById("customCategory");
+      const finalCategory = category === "Others" ? customCategoryInput?.value.trim() : category;
+
       if (
         !proFullName ||
         !email ||
         !proPhone ||
         !state ||
         !city ||
-        !category ||
+        !finalCategory ||
         !password ||
         !confirmPassword
       ) {
@@ -197,7 +200,7 @@ if (termsCheckbox) {
           phone: proPhone,
           state,
           city,
-          category,
+          category: finalCategory,
           role: "professional",
           profile_submitted: false,
           status: null,
