@@ -91,7 +91,6 @@ function Home() {
                                 <img
                                     src={nurseIcon}
                                     alt="Home healthcare"
-                                    className="rounded-circle"
                                     style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                                 />
 
@@ -128,7 +127,6 @@ function Home() {
                                 <img
                                     src={physioIcon}
                                     alt="Physiotherapy"
-                                    className="rounded-circle"
                                     style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                                 />
                                 <div className="d-flex flex-column">
@@ -203,7 +201,6 @@ function Home() {
                                 <img
                                     src={verifiedIcon}
                                     alt="Home healthcare"
-                                    className="rounded-circle"
                                     style={{ width: '100px', objectFit: 'cover' }}
                                 />
                                 <div className="d-flex flex-column text-start">
@@ -232,9 +229,8 @@ function Home() {
                             <div className="d-flex align-items-start gap-3">
                                 <img
                                     src={noteIcon}
-                                    alt="Physiotherapy"
-                                    className="rounded-circle"
-                                    style={{ width: '130px', height: '95px', objectFit: 'cover' }}
+                                    alt="Transparancy"
+                                    style={{ width: '135px', height: '95px', objectFit: 'cover' }}
                                 />
 
                                 <div className="d-flex flex-column text-start">
