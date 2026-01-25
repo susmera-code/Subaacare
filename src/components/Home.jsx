@@ -1,12 +1,32 @@
+import { useNavigate } from "react-router-dom";
 import heroImage from "../assets/Image1.png";
 import nurseIcon from "../assets/nurse.png";
 import physioIcon from "../assets/physio.png";
 import verifiedIcon from "../assets/verified.svg";
+import noteIcon from "../assets/note.png";
 
 function Home() {
+    const navigate = useNavigate();
+    const handleBooking = () => {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        if (!token) {
+            console.log("Not logged in → redirect login");
+            navigate("/login");
+            return;
+        }
+
+        if (role && role.toLowerCase() === "patient") {
+            console.log("Patient logged in → redirect patient");
+            navigate("/patient");
+            return;
+        }
+        console.log("Logged in but not patient → redirect login");
+        navigate("/login");
+    };
+
     return (
         <div>
-
             {/* ================= HERO SECTION ================= */}
             <div className="overflow-hidden mb-5 position-relative">
                 <div className="row g-0 align-items-stretch min-vh-50">
@@ -25,10 +45,10 @@ function Home() {
                             </p>
 
                             <div className="d-flex gap-3 mb-4">
-                                <button className="btn btn-success px-4 py-2 fs-15">
+                                <button type="button" className="btn btn-success px-4 py-2 fs-15" onClick={handleBooking}>
                                     Book a Nurse →
                                 </button>
-                                <button className="btn btn-success px-4 py-2 fs-15">
+                                <button type="button" className="btn btn-success px-4 py-2 fs-15" onClick={handleBooking}>
                                     Book a Physiotherapist →
                                 </button>
                             </div>
@@ -79,19 +99,19 @@ function Home() {
                                     <h5 className="fw-bold mb-2 text-start text-blue fs-23">Home Nursing</h5>
                                     <ul className="list-unstyled mb-3 text-muted fs-16">
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Post-hospital care
+                                            <i className="bi bi-check-circle-fill"></i> Post-hospital care
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i>Elderly care
+                                            <i className="bi bi-check-circle-fill"></i>Elderly care
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Wound dressing & injections
+                                            <i className="bi bi-check-circle-fill"></i> Wound dressing & injections
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Vitals monitoring
+                                            <i className="bi bi-check-circle-fill"></i> Vitals monitoring
                                         </li>
                                     </ul>
-                                    <button className="btn btn-success align-self-start fs-14">
+                                    <button className="btn btn-success align-self-start fs-14" onClick={handleBooking}>
                                         Book Nurse →
                                     </button>
                                 </div>
@@ -115,19 +135,19 @@ function Home() {
                                     <h5 className="fw-bold mb-2 text-start text-blue fs-23">Physiotherapy</h5>
                                     <ul className="list-unstyled mb-3 text-muted fs-16">
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i>Stroke rehabilitation
+                                            <i className="bi bi-check-circle-fill"></i>Stroke rehabilitation
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Post-op recovery
+                                            <i className="bi bi-check-circle-fill"></i> Post-op recovery
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Ortho & neuro physio
+                                            <i className="bi bi-check-circle-fill"></i> Ortho & neuro physio
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Mobility improvement
+                                            <i className="bi bi-check-circle-fill"></i> Mobility improvement
                                         </li>
                                     </ul>
-                                    <button className="btn btn-success align-self-start fs-14">
+                                    <button className="btn btn-success align-self-start fs-14" onClick={handleBooking}>
                                         Book Physiotherapist →
                                     </button>
                                 </div>
@@ -191,16 +211,16 @@ function Home() {
 
                                     <ul className="list-unstyled mb-3 text-muted fs-16">
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i>Qualification verification
+                                            <i className="bi bi-check-circle-fill"></i>Qualification verification
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> ID validation
+                                            <i className="bi bi-check-circle-fill"></i> ID validation
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i>Background & reference checks
+                                            <i className="bi bi-check-circle-fill"></i>Background & reference checks
                                         </li>
                                         <li className="d-flex align-items-center gap-2">
-                                            <i class="bi bi-check-circle-fill"></i> Ongoing performance monitoring
+                                            <i className="bi bi-check-circle-fill"></i> Ongoing performance monitoring
                                         </li>
                                     </ul>
                                 </div></div>
@@ -209,20 +229,29 @@ function Home() {
 
                     <div className="col-md-6">
                         <div className="card shadow-sm rounded-4 p-4 h-100">
-                            <h5 className="fw-bold mb-3 text-blue fs-23">Care with Transparency</h5>
-                            <ul className="list-unstyled mb-3 text-muted fs-16">
-                                <li className="d-flex align-items-center gap-2">
-                                    <i class="bi bi-check-circle-fill"></i> Clear pricing before booking
-                                </li>
-                                <li className="d-flex align-items-center gap-2">
-                                    <i class="bi bi-check-circle-fill"></i>Easy reschedule/cancellation
-                                </li>
-                                <li className="d-flex align-items-center gap-2">
-                                    <i class="bi bi-check-circle-fill"></i> Support & escalation system
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                            <div className="d-flex align-items-start gap-3">
+                                <img
+                                    src={noteIcon}
+                                    alt="Physiotherapy"
+                                    className="rounded-circle"
+                                    style={{ width: '130px', height: '95px', objectFit: 'cover' }}
+                                />
+
+                                <div className="d-flex flex-column text-start">
+                                    <h5 className="fw-bold mb-3 text-blue fs-23">Care with Transparency</h5>
+                                    <ul className="list-unstyled mb-3 text-muted fs-16">
+                                        <li className="d-flex align-items-center gap-2">
+                                            <i className="bi bi-check-circle-fill"></i> Clear pricing before booking
+                                        </li>
+                                        <li className="d-flex align-items-center gap-2">
+                                            <i className="bi bi-check-circle-fill"></i>Easy reschedule/cancellation
+                                        </li>
+                                        <li className="d-flex align-items-center gap-2">
+                                            <i className="bi bi-check-circle-fill"></i> Support & escalation system
+                                        </li>
+                                    </ul>
+                                </div></div>
+                        </div></div>
                 </div>
             </div>
             {/* ================= FAQs ================= */}
@@ -283,7 +312,7 @@ function Home() {
                     <div className="col-md-6 mb-5">
                         <h4 className="fw-bold mb-3 text-start text-blue">Contact us</h4>
                         <div className="card shadow-sm rounded-4 p-4 text-start">
-                            <h5 className="fw-bold mb-3">  <i class="bi bi-check-circle-fill fs-18"></i> Questions?</h5>
+                            <h5 className="fw-bold mb-3">  <i className="bi bi-check-circle-fill fs-18"></i> Questions?</h5>
 
                             <div className="text-muted">
                                 <strong>Subaa Care</strong>

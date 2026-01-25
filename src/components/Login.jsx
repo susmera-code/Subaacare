@@ -30,68 +30,73 @@ const Login = () => {
         return true;
     };
 
-   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError("");
 
-    if (!validate()) return;
+        if (!validate()) return;
 
-    setLoading(true);
+        setLoading(true);
 
-    try {
-        // 1️⃣ Login using Supabase
-        const { data, error: loginError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            // 1️⃣ Login using Supabase
+            const { data, error: loginError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        if (loginError) throw loginError;
+            if (loginError) throw loginError;
 
-        const user = data.user;
-        if (!user) throw new Error("User not found");
+            const user = data.user;
+            if (!user) throw new Error("User not found");
 
-        // 2️⃣ Get role from user metadata
-        const role = user.user_metadata?.role;
-        if (!role) throw new Error("User role missing");
+            // 2️⃣ Get role from user metadata
+            const role = user.user_metadata?.role;
+            if (!role) throw new Error("User role missing");
 
-        // 3️⃣ Redirect based on role
-        if (role === "patient") {
-            navigate("/patient");
-            
-        } else if (role === "professional") {
-            // Fetch professional profile
-            const { data: profile, error: profileError } = await supabase
-                .from("professionals")
-                .select("profile_submitted, status")
-                .eq("id", user.id)
-                .single();
-
-            if (profileError || !profile) throw new Error("Unable to fetch professional profile");
-
-            // ✅ Redirect approved professionals to dashboard first
-            if (profile.status === "approved") {
-                navigate("/professionaldashboard");
+            if (data.session) {
+                localStorage.setItem("token", data.session.access_token);
+                localStorage.setItem("role", role);
             }
-            // Profile not submitted yet
-            else if (!profile.profile_submitted) {
-                navigate("/professional"); // first-time login, fill profile
+
+            // 3️⃣ Redirect based on role
+            if (role === "patient") {
+                navigate("/patient");
+
+            } else if (role === "professional") {
+                // Fetch professional profile
+                const { data: profile, error: profileError } = await supabase
+                    .from("professionals")
+                    .select("profile_submitted, status")
+                    .eq("id", user.id)
+                    .single();
+
+                if (profileError || !profile) throw new Error("Unable to fetch professional profile");
+
+                // ✅ Redirect approved professionals to dashboard first
+                if (profile.status === "approved") {
+                    navigate("/professionaldashboard");
+                }
+                // Profile not submitted yet
+                else if (!profile.profile_submitted) {
+                    navigate("/professional"); // first-time login, fill profile
+                }
+                // Profile submitted but pending/rejected
+                else {
+                    navigate("/professional");
+                }
+            } else if (role === "admin") {
+                navigate("/admin");
+            } else {
+                throw new Error("Unknown user role");
             }
-            // Profile submitted but pending/rejected
-            else {
-                navigate("/professional");
-            }
-        } else if (role === "admin") {
-            navigate("/admin");
-        } else {
-            throw new Error("Unknown user role");
+        } catch (err) {
+            console.error("Login error:", err.message);
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-    } catch (err) {
-        console.error("Login error:", err.message);
-        setError(err.message);
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
     return (
