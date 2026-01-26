@@ -18,7 +18,7 @@ export default function ForgotPassword() {
 
     // ❌ Password reset request
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:5173/reset-password", // the route in your app
+      redirectTo: `${import.meta.env.VITE_SUPABASE_URL}/reset-password`,
     });
 
     if (error) setError(error.message);
@@ -37,7 +37,7 @@ export default function ForgotPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             /></div>
-          <div className="col-md-4 text-start ">
+          <div className="col-md-2 text-start ">
             <button className="btn btn-primary fs-14" type="submit">Send reset link</button>
           </div></div>
       </form>

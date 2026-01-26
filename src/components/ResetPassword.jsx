@@ -36,14 +36,14 @@ export default function ResetPassword() {
   return (
     <div className="container">
       <h3>Reset Password</h3>
-      <form onSubmit={handleReset}>
-        <input className="form-control"
+      <form className="w-50 text-start" onSubmit={handleReset}>
+        <input className="form-control fs-15"
           type="password"
           placeholder="Enter new password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit" className="btn btn-success">Update Password</button>
+        <button type="submit" className="btn btn-success mt-2 fs-14">Update Password</button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {message && <p style={{ color: "green" }}>{message}</p>}
