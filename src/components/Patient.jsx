@@ -5,7 +5,7 @@ import { supabase } from "./supabaseClient";
 const Patient = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [skills, setSkills] = useState("");
   const [category, setCategory] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -59,7 +59,9 @@ const Patient = () => {
         profQuery = profQuery.eq("state", selectedState);
       }
       if (category) profQuery = profQuery.eq("category", category);
-
+      if (skills) {
+        profQuery = profQuery.ilike("skills", skills);
+      }
       const { data: professionals, error: profError } = await profQuery;
       if (profError) throw profError;
       if (!professionals || professionals.length === 0) {
@@ -164,9 +166,6 @@ const Patient = () => {
       alert(err.message);
     }
   };
-
-
-
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -179,7 +178,7 @@ const Patient = () => {
         {error && <p className="text-danger">{error}</p>}
 
         <div className="row text-start pb-1">
-          <div className="col-md-3">
+          <div className="col-md-2">
             <label className="fw-bold mb-1">Location</label>
             <div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
 
@@ -198,11 +197,20 @@ const Patient = () => {
               </select>
             </div>
           </div>
-
-          <div className="col-md-3">
+          <div className="col-md-2">
+            <label className="fw-bold mb-1">Skills</label>
+            <input
+              type="text"
+              className="form-control fs-14"
+              placeholder="e.g. Nursing, Caring"
+              value={skills}
+              onChange={(e) => setSkills(e.target.value)}
+            />
+          </div>
+          <div className="col-md-2">
             <label className="fw-bold mb-1">Category</label>
             <select
-              className="form-select"
+              className="form-select fs-14"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -212,29 +220,26 @@ const Patient = () => {
               <option value="Others">Others</option>
             </select>
           </div>
-
           <div className="col-md-3">
             <label className="fw-bold mb-1">From</label>
             <input
               type="datetime-local"
-              className="form-control"
+              className="form-control fs-14"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
             />
           </div>
-
           <div className="col-md-3">
             <label className="fw-bold mb-1">To</label>
             <input
               type="datetime-local"
-              className="form-control"
+              className="form-control fs-14"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
             />
           </div>
         </div>
-
-        <div className="d-flex justify-content-end mt-3">
+        <div className="d-flex justify-content-end mt-3 text-end">
           <button
             className="btn btn-primary"
             onClick={searchProfessionals}
@@ -263,7 +268,7 @@ const Patient = () => {
         <tbody>
           {results.length === 0 ? (
             <tr>
-              <td colSpan="7" className="text-center">No results found</td>
+              <td colSpan="8" className="text-center">No results found</td>
             </tr>
           ) : (
             results.map((p, i) => (

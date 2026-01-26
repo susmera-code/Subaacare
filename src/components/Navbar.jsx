@@ -109,7 +109,7 @@ const Navbar = () => {
                                         fontWeight: "bold",
                                         fontSize: "1rem",
                                         textAlign: "center",
-                                        lineHeight: "40px",
+                                        lineHeight: "30px",
                                         cursor: "pointer",
                                         overflow: "hidden",
                                     }}

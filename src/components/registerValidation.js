@@ -34,6 +34,11 @@ export function initRegisterValidation(isProfessional, selectedState) {
     return regex.test(email);
   };
 
+  const isStrongPassword = (password) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return regex.test(password);
+  };
 
   // ---------------- PATIENT ----------------
   if (!isProfessional) {
@@ -76,6 +81,13 @@ export function initRegisterValidation(isProfessional, selectedState) {
         showFormError("Please enter a valid email address");
         return;
       }
+      if (!isStrongPassword(password)) {
+        showFormError(
+          "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+        );
+        return;
+      }
+
       if (password !== confirmPassword) {
         showFormError("Passwords do not match");
         return;
@@ -169,6 +181,13 @@ export function initRegisterValidation(isProfessional, selectedState) {
         showFormError("Please enter a valid email address");
         return;
       }
+      if (!isStrongPassword(password)) {
+        showFormError(
+          "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+        );
+        return;
+      }
+
       if (password !== confirmPassword) {
         showFormError("Passwords do not match");
         return;
@@ -186,7 +205,6 @@ export function initRegisterValidation(isProfessional, selectedState) {
       const { data: signInData, error: signInError } =
         await supabase.auth.signInWithPassword({ email, password });
       if (signInError) return showFormError(signInError.message);
-
       const userId = signInData.user.id;
 
       // Insert into professionals
@@ -210,9 +228,7 @@ export function initRegisterValidation(isProfessional, selectedState) {
         showFormError(dbError.message);
         return;
       }
-
       alert("Professional registration successful!");
-
     };
   }
 }
