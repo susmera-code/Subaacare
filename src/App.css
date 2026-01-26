@@ -336,3 +336,11 @@ p {
   pointer-events: none;
   z-index: 1;
 }
+
+.search-form select.form-select,
+.search-form input.form-control {
+  border-color: #ffffff !important;
+  border-radius: 8px;
+  box-shadow: 1px 1px 2px 1px #dfdfdf !important;
+  height: 40px !important;
+}

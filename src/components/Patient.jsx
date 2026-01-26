@@ -177,7 +177,7 @@ const Patient = () => {
         <h4 className="fw-bold mb-4">Search</h4>
         {error && <p className="text-danger">{error}</p>}
 
-        <div className="row text-start pb-1">
+        <div className="row text-start pb-1 search-form">
           <div className="col-md-2">
             <label className="fw-bold mb-1">Location</label>
             <div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
