@@ -52,7 +52,9 @@ const Patient = () => {
       const searchFrom = fromDate ? toPgTimestamp(fromDate) : null;
       const searchTo = toDate ? toPgTimestamp(toDate) : null;
 
-      let profQuery = supabase.from("professionals").select("id, full_name, skills, state, category, email");
+      let profQuery = supabase
+        .from("professionals")
+        .select("id, full_name, skills, state, category, email, profile_photo");
       if (selectedState) {
         profQuery = profQuery.eq("state", selectedState);
       }
@@ -95,6 +97,22 @@ const Patient = () => {
       setSearching(false);
     }
   };
+  const getProfilePhotoUrl = (value) => {
+    if (!value) return null;
+
+    // If already a full URL, return as-is
+    if (value.startsWith("http")) {
+      return value;
+    }
+
+    // Otherwise treat as storage path
+    const { data } = supabase.storage
+      .from("profile-photos") // 👈 bucket name
+      .getPublicUrl(value);
+
+    return data?.publicUrl || null;
+  };
+
 
   useEffect(() => {
     getUserProfile()
@@ -232,6 +250,7 @@ const Patient = () => {
         <thead className="table-primary">
           <tr>
             <th>#</th>
+            <th>Photo</th>
             <th>Name</th>
             <th>Skills</th>
             <th>Location</th>
@@ -250,6 +269,22 @@ const Patient = () => {
             results.map((p, i) => (
               <tr key={p.id}>
                 <td>{i + 1}</td>
+                <td className="text-center">
+                  {p.profile_photo ? (
+                    <img
+                      src={getProfilePhotoUrl(p.profile_photo)}
+                      alt="Profile"
+                      width="50"
+                      height="50"
+                      style={{
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  ) : (
+                    <span className="text-muted">No Photo</span>
+                  )}
+                </td>
                 <td>{p.full_name}</td>
                 <td>{p.skills}</td>
                 <td>
