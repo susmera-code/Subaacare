@@ -4,19 +4,17 @@ import { useNavigate } from "react-router-dom";
 
 const ProfessionalDashboard = () => {
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
   const [availability, setAvailability] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [userId, setUserId] = useState(null);
   const [activeView, setActiveView] = useState("appointments");
-
   const [fromDateTime, setFromDateTime] = useState("");
   const [toDateTime, setToDateTime] = useState("");
   const [editingId, setEditingId] = useState(null);
-
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
+
 
   // -------------------- Helpers --------------------
   const toInputFormat = (value) => value ? value.replace(" ", "T").slice(0, 16) : "";
@@ -30,6 +28,17 @@ const ProfessionalDashboard = () => {
     const minutes = String(d.getMinutes()).padStart(2, "0");
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
+const formatForSupabase = (datetime) => {
+  if (!datetime) return null;
+  const d = new Date(datetime);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  const seconds = "00"; // add seconds
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
 
   // -------------------- Auth & Approval --------------------
   useEffect(() => {
@@ -66,7 +75,7 @@ const ProfessionalDashboard = () => {
       .from("professional_availability")
       .select("*")
       .eq("professional_id", id)
-      .order("from_datetime", { ascending: true });
+      
     setAvailability(data || []);
   };
 
@@ -144,8 +153,12 @@ const ProfessionalDashboard = () => {
       setError("End time must be after start time");
       return;
     }
+const payload = {
+  from_datetime: formatForSupabase(fromDateTime),
+  to_datetime: formatForSupabase(toDateTime),
+};
 
-    const payload = { from_datetime: fromDateTime, to_datetime: toDateTime };
+
     let response;
 
     if (editingId) {
@@ -157,7 +170,10 @@ const ProfessionalDashboard = () => {
     } else {
       response = await supabase
         .from("professional_availability")
-        .insert({ professional_id: userId, ...payload });
+        .insert({
+          professional_id: userId,
+          ...payload,
+        });
     }
 
     if (response.error) {
@@ -165,7 +181,12 @@ const ProfessionalDashboard = () => {
       return;
     }
 
-    alert(editingId ? "Availability updated successfully!" : "Availability added successfully!");
+    // ✅ SUCCESS ALERT
+    alert(editingId
+      ? "Availability updated successfully!"
+      : "Availability added successfully!"
+    );
+
     resetModal();
     fetchAvailability(userId);
   };
@@ -187,6 +208,23 @@ const ProfessionalDashboard = () => {
     setToDateTime("");
     setError("");
   };
+// -------------------- Appointment Sorting --------------------
+const now = new Date();
+
+const upcomingAppointments = appointments
+  .filter(appt => new Date(appt.from_datetime) >= now)
+  .sort((a, b) => new Date(a.from_datetime) - new Date(b.from_datetime));
+
+const pastAppointments = appointments
+  .filter(appt => new Date(appt.from_datetime) < now)
+  .sort((a, b) => new Date(b.from_datetime) - new Date(a.from_datetime));
+const upcomingAvailability = availability
+  .filter(slot => new Date(slot.from_datetime) >= now)
+  .sort((a, b) => new Date(a.from_datetime) - new Date(b.from_datetime));
+
+const pastAvailability = availability
+  .filter(slot => new Date(slot.from_datetime) < now)
+  .sort((a, b) => new Date(b.from_datetime) - new Date(a.from_datetime));
 
   if (loading) return <p>Checking approval status...</p>;
 
@@ -243,96 +281,217 @@ const ProfessionalDashboard = () => {
 
       {/* -------------------- Appointments Table -------------------- */}
       {activeView === "appointments" && (
-        <div className="table-responsive mt-3">
-          <h4 className="fw-semibold mb-4">Patient Appointments</h4>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Patient Name</th>
-                <th>From Date & Time</th>
-                <th>To Date & Time</th>
-                <th>Actions / Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {appointments.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="text-center">No appointments found</td>
-                </tr>
-              ) : (
-                appointments.map((appt) => {
-                  const fromDT = new Date(appt.from_datetime);
-                  const toDT = new Date(appt.to_datetime);
+        <div className="accordion mt-3" id="appointmentsAccordion">
 
-                  const fromDateTime = `${fromDT.toLocaleDateString("en-GB")} ${fromDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}`;
-                  const toDateTime = `${toDT.toLocaleDateString("en-GB")} ${toDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}`;
+          {/* 🔵 UPCOMING APPOINTMENTS */}
+          <div className="accordion-item mb-3">
+            <h2 className="accordion-header" id="upcomingHeading">
+              <button
+                className="accordion-button fw-semibold text-blue"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#upcomingCollapse"
+                aria-expanded="true"
+              >
+                Upcoming Appointments ({upcomingAppointments.length})
+              </button>
+            </h2>
 
-                  return (
-                    <tr key={appt.id}>
-                      <td>{appt.patients?.full_name || "Unknown"}</td>
-                      <td>{fromDateTime}</td>
-                      <td>{toDateTime}</td>
-                      <td>
-                        {appt.status === "pending" ? (
-                          <>
-                            <button
-                              className="btn btn-sm btn-success me-2 fs-12"
-                              onClick={() => handleAcceptAppointment(appt.id)}
-                            >
-                              Accept
-                            </button>
-                            <button
-                              className="btn btn-sm btn-danger fs-12"
-                              onClick={() => handleDeleteAppointment(appt.id)}
-                            >
-                              Reject
-                            </button>
-                          </>
-                        ) : (
-                            <span className="text-success fw-semibold fs-14">Accepted</span>
-                        )}
-                      </td>
+            <div
+              id="upcomingCollapse"
+              className="accordion-collapse collapse show"
+              data-bs-parent="#appointmentsAccordion"
+            >
+              <div className="accordion-body table-responsive">
+                <table className="table table-bordered mb-0">
+                  <thead>
+                    <tr>
+                      <th>Patient Name</th>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Actions / Status</th>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                  </thead>
+                  <tbody>
+                    {upcomingAppointments.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="text-center">No upcoming appointments</td>
+                      </tr>
+                    ) : (
+                      upcomingAppointments.map((appt) => {
+                        const fromDT = new Date(appt.from_datetime);
+                        const toDT = new Date(appt.to_datetime);
+
+                        return (
+                          <tr key={appt.id}>
+                            <td>{appt.patients?.full_name || "Unknown"}</td>
+                            <td>{fromDT.toLocaleDateString("en-GB")} {fromDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
+                            <td>{toDT.toLocaleDateString("en-GB")} {toDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
+                            <td>
+                              {appt.status === "pending" ? (
+                                <>
+                                  <button
+                                    className="btn btn-sm btn-success me-2 fs-12"
+                                    onClick={() => handleAcceptAppointment(appt.id)}
+                                  >
+                                    Accept
+                                  </button>
+                                  <button
+                                    className="btn btn-sm btn-danger fs-12"
+                                    onClick={() => handleDeleteAppointment(appt.id)}
+                                  >
+                                    Reject
+                                  </button>
+                                </>
+                              ) : (
+                                <span className="text-success fw-semibold">Accepted</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* ⚫ PAST APPOINTMENTS */}
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="pastHeading">
+              <button
+                className="accordion-button collapsed fw-semibold text-blue"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#pastCollapse"
+              >
+                Previous Appointments ({pastAppointments.length})
+              </button>
+            </h2>
+
+            <div
+              id="pastCollapse"
+              className="accordion-collapse collapse"
+              data-bs-parent="#appointmentsAccordion"
+            >
+              <div className="accordion-body table-responsive">
+                <table className="table table-bordered mb-0">
+                  <thead>
+                    <tr>
+                      <th>Patient Name</th>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pastAppointments.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="text-center">No past appointments</td>
+                      </tr>
+                    ) : (
+                      pastAppointments.map((appt) => {
+                        const fromDT = new Date(appt.from_datetime);
+                        const toDT = new Date(appt.to_datetime);
+
+                        return (
+                          <tr key={appt.id}>
+                            <td>{appt.patients?.full_name || "Unknown"}</td>
+                            <td>{fromDT.toLocaleDateString("en-GB")} {fromDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
+                            <td>{toDT.toLocaleDateString("en-GB")} {toDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
+                            <td>
+                              <span className="badge bg-secondary">
+                                {appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
       )}
-
 
       {/* -------------------- Availability Table -------------------- */}
-      {activeView === "availability" && (
-        <div className="table-responsive mt-3">
-          <h4 className="fw-semibold mb-4">Your Availability</h4>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Actions</th>
+     {activeView === "availability" && (
+  <div className="mt-3">
+
+    {/* Upcoming / Current Availability */}
+    <h4 className="fw-semibold mb-2 text-blue">Upcoming Availability</h4>
+    <div className="table-responsive mb-4">
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {upcomingAvailability.length === 0 ? (
+            <tr><td colSpan="3" className="text-center">No upcoming availability</td></tr>
+          ) : (
+            upcomingAvailability.map(slot => (
+              <tr key={slot.id}>
+                <td>{formatDateTime(slot.from_datetime)}</td>
+                <td>{formatDateTime(slot.to_datetime)}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-warning me-2"
+                    onClick={() => handleEdit(slot)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(slot.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {availability.length === 0 ? (
-                <tr><td colSpan="3" className="text-center">No availability added</td></tr>
-              ) : (
-                availability.map((slot) => (
-                  <tr key={slot.id}>
-                    <td>{formatDateTime(slot.from_datetime)}</td>
-                    <td>{formatDateTime(slot.to_datetime)}</td>
-                    <td>
-                      <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(slot)}>Edit</button>
-                      <button className="btn btn-sm btn-danger" onClick={() => handleDelete(slot.id)}>Delete</button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Past Availability */}
+    <h4 className="fw-semibold mb-2 text-blue">Past Availability</h4>
+    <div className="table-responsive">
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pastAvailability.length === 0 ? (
+            <tr><td colSpan="3" className="text-center">No past availability</td></tr>
+          ) : (
+            pastAvailability.map(slot => (
+              <tr key={slot.id}>
+                <td>{formatDateTime(slot.from_datetime)}</td>
+                <td>{formatDateTime(slot.to_datetime)}</td>
+                <td><span className="badge bg-secondary">Expired</span></td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+)}
+
 
     </div>
   );

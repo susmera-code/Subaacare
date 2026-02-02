@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { getUserProfile } from "./getUserProfile";
 import { supabase } from "./supabaseClient";
+import Modal from "react-bootstrap/Modal";
+import Calendar from "react-calendar";
+import 'react-calendar/dist/Calendar.css';
+import Button from "react-bootstrap/Button";
 
 const Patient = () => {
   const [profile, setProfile] = useState(null);
@@ -9,88 +13,193 @@ const Patient = () => {
   const [category, setCategory] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentProfessional, setCurrentProfessional] = useState(null);
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
-  const [selected, setSelected] = useState({}); // { professionalId: selectedIndex }
+
+  // Booking state
+  const [selectionStep, setSelectionStep] = useState("from");
+  const [selectedDate, setSelectedDate] = useState({ from: null, to: null });
+  const [fromDateTime, setFromDateTime] = useState("");
+  const [toDateTime, setToDateTime] = useState("");
+  const [availableSlots, setAvailableSlots] = useState({});
+
+  // Fetch India states
   useEffect(() => {
-    // Fetch India states
     fetch("https://countriesnow.space/api/v0.1/countries/states", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ country: "India" })
+      body: JSON.stringify({ country: "India" }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.data?.states) {
-          setStates(data.data.states);
-        }
-      })
-      .catch((err) => console.error("Error fetching states:", err));
+      .then(res => res.json())
+      .then(data => data?.data?.states && setStates(data.data.states))
+      .catch(err => console.error(err));
   }, []);
-  // Set the selected slot
-  const setSelectedSlot = (professionalId, slotIndex) => {
-    setSelected(prev => ({ ...prev, [professionalId]: slotIndex }));
-  };
 
-  // Convert datetime-local to PostgreSQL timestamp
-  const toPgTimestamp = (value) => {
+  // Load user profile
+  useEffect(() => {
+    getUserProfile()
+      .then(res => setProfile(res.profile))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+
+  // Utilities
+  const toDateKey = (value) => {
     if (!value) return null;
-    return value.replace("T", " ") + ":00";
+    const date = typeof value === "string" ? new Date(value) : value;
+    if (!(date instanceof Date) || isNaN(date)) return null;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
   };
 
-  // Search professionals based on filters
-  const searchProfessionals = async () => {
-    setSearching(true);
-    setError("");
-    setResults([]);
+ const formatLocalDateTime = (date) => {
+  if (!date) return "";
+  const pad = (n) => n.toString().padStart(2,"0");
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+};
 
+  const addDays = (date, days) => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
+
+  const tileDisabled = ({ date, view }) => {
+    if (view !== "month") return false;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    date.setHours(0,0,0,0);
+    const key = toDateKey(date);
+    return date < today || !availableSlots[key];
+  };
+
+  const tileClassName = ({ date, view }) => {
+    if (view !== "month") return "";
+    const classes = [];
+    if (selectedDate.from && toDateKey(date) === toDateKey(selectedDate.from)) classes.push("bg-success text-white rounded");
+    if (selectedDate.to && toDateKey(date) === toDateKey(selectedDate.to)) classes.push("bg-danger text-white rounded");
+    return classes.join(" ");
+  };
+
+  // Booking modal
+  const handleOpenModal = (prof) => {
+    const grouped = {};
+    (prof.availability || []).forEach(slot => {
+      const start = new Date(slot.from_datetime.replace(" ","T"));
+      const end = new Date(slot.to_datetime.replace(" ","T"));
+      let current = new Date(start); current.setHours(0,0,0,0);
+      end.setHours(0,0,0,0);
+      while (current <= end) {
+        const key = toDateKey(current);
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(slot);
+        current = addDays(current, 1);
+      }
+    });
+
+    setCurrentProfessional(prof);
+    setAvailableSlots(grouped);
+    setSelectionStep("from");
+    setSelectedDate({ from: null, to: null });
+    setFromDateTime("");
+    setToDateTime("");
+    setModalOpen(true);
+  };
+
+  const getAvailableTimesForDate = (date) => {
+    if (!date) return [];
+    const key = toDateKey(date);
+    const slots = availableSlots[key] || [];
+    return slots.flatMap(slot => {
+      const start = new Date(slot.from_datetime.replace(" ","T"));
+      const end = new Date(slot.to_datetime.replace(" ","T"));
+      const times = [];
+      const current = new Date(start);
+      while (current <= end) {
+        times.push(`${current.getHours().toString().padStart(2,"0")}:${current.getMinutes().toString().padStart(2,"0")}`);
+        current.setMinutes(current.getMinutes() + 30);
+      }
+      return times;
+    });
+  };
+
+  // Confirm booking
+  const handleConfirmBooking = async () => {
+  if (!fromDateTime || !toDateTime) return alert("Please select from and to date & time");
+
+  // Parse into Date objects
+  const from = new Date(fromDateTime);
+  const to = new Date(toDateTime);
+
+  if (isNaN(from.getTime()) || isNaN(to.getTime())) return alert("Invalid date/time selected");
+  if (from >= to) return alert("From datetime must be before To datetime");
+
+  const dayKey = toDateKey(from);
+  const daySlots = availableSlots[dayKey] || [];
+  const isWithinAvailability = daySlots.some(slot => {
+    const slotFrom = new Date(slot.from_datetime.replace(" ","T"));
+    const slotTo = new Date(slot.to_datetime.replace(" ","T"));
+    return from >= slotFrom && to <= slotTo;
+  });
+  if (!isWithinAvailability) return alert("Selected time is outside availability");
+
+  try {
+    const { data: { user }, error: userErr } = await supabase.auth.getUser();
+    if (userErr) throw userErr;
+
+    const { data, error } = await supabase.from("appointments").insert({
+      professional_id: currentProfessional.id,
+      patient_id: user.id,
+      from_datetime: formatLocalDateTime(from), // guaranteed YYYY-MM-DD HH:MM:SS
+      to_datetime: formatLocalDateTime(to)
+    });
+
+    if (error) throw error;
+
+    alert("Appointment booked successfully!");
+    setModalOpen(false);
+  } catch (err) {
+    console.error(err);
+    alert(err.message || "Failed to book appointment");
+  }
+};
+
+
+  // Search professionals
+  const toPgTimestamp = (value) => value ? value.replace("T"," ") + ":00" : null;
+  const searchProfessionals = async () => {
+    setSearching(true); setError(""); setResults([]);
     try {
       const searchFrom = fromDate ? toPgTimestamp(fromDate) : null;
       const searchTo = toDate ? toPgTimestamp(toDate) : null;
 
-      let profQuery = supabase
-        .from("professionals")
-        .select("id, full_name, skills, state, category, email, profile_photo");
-      if (selectedState) {
-        profQuery = profQuery.eq("state", selectedState);
-      }
+      let profQuery = supabase.from("professionals").select("id, full_name, skills, state, category, email, profile_photo");
+      if (selectedState) profQuery = profQuery.eq("state", selectedState);
       if (category) profQuery = profQuery.eq("category", category);
       if (skills) {
-        profQuery = profQuery.ilike("skills", skills);
+        const skillsArray = skills.split(",").map(s => s.trim()).filter(Boolean);
+        if (skillsArray.length) profQuery = profQuery.contains("skills", skillsArray);
       }
+
       const { data: professionals, error: profError } = await profQuery;
       if (profError) throw profError;
-      if (!professionals || professionals.length === 0) {
-        setResults([]);
-        return;
-      }
 
       const final = [];
-
-      for (const prof of professionals) {
-        let availQuery = supabase
-          .from("professional_availability")
-          .select("from_datetime, to_datetime")
-          .eq("professional_id", prof.id);
-
+      for (const prof of professionals || []) {
+        let availQuery = supabase.from("professional_availability").select("from_datetime, to_datetime").eq("professional_id", prof.id);
         if (searchFrom) availQuery = availQuery.gte("to_datetime", searchFrom);
         if (searchTo) availQuery = availQuery.lte("from_datetime", searchTo);
-
         availQuery = availQuery.order("from_datetime", { ascending: true });
-
         const { data: availability, error: availError } = await availQuery;
         if (availError) throw availError;
-
-        final.push({
-          ...prof,
-          availability: availability || [],
-        });
+        final.push({ ...prof, availability: availability || [] });
       }
-
       setResults(final);
     } catch (err) {
       console.error(err);
@@ -99,121 +208,37 @@ const Patient = () => {
       setSearching(false);
     }
   };
+
   const getProfilePhotoUrl = (value) => {
     if (!value) return null;
-
-    // If already a full URL, return as-is
-    if (value.startsWith("http")) {
-      return value;
-    }
-
-    // Otherwise treat as storage path
-    const { data } = supabase.storage
-      .from("profile-photos") // 👈 bucket name
-      .getPublicUrl(value);
-
+    if (value.startsWith("http")) return value;
+    const { data } = supabase.storage.from("profile-photos").getPublicUrl(value);
     return data?.publicUrl || null;
   };
-
-
-  useEffect(() => {
-    getUserProfile()
-      .then((res) => {
-        setProfile(res.profile);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err.message);
-        setLoading(false);
-      });
-  }, []);
-
-  // Book an appointment (React only inserts to DB)
-  const handleBook = async (professionalId) => {
-    const slotIndex = selected[professionalId];
-    if (slotIndex === undefined) return alert("Select a slot");
-
-    const prof = results.find(p => p.id === professionalId);
-    const slot = prof.availability[slotIndex];
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      // Insert appointment
-      const { data: appointment, error } = await supabase
-        .from("appointments")
-        .insert({
-          professional_id: professionalId,
-          patient_id: user.id,
-          from_datetime: slot.from_datetime,
-          to_datetime: slot.to_datetime,
-        })
-        .select()
-        .single();
-      if (error) throw error;
-
-      // ✅ Call public Edge Function to send email
-      await fetch('https://yzrpbocdsgmdagmqthsy.functions.supabase.co/send-appointment-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appointment })
-      });
-
-      alert("Appointment booked & email sent");
-
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
-  };
-  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="container">
       <h2>Welcome, {profile.full_name}</h2>
 
-      {/* Search Card */}
+      {/* Search Form */}
       <div className="card shadow-lg rounded-4 d-flex mt-4 p-3">
         <h4 className="fw-bold mb-4">Search</h4>
         {error && <p className="text-danger">{error}</p>}
-
         <div className="row text-start pb-1 search-form">
           <div className="col-md-2">
             <label className="fw-bold mb-1">Location</label>
-            <div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
-
-              <select
-                id="state"
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-                className="form-select w-100 fs-14"
-              >
-                <option value="">Select</option>
-                {states.map((st) => (
-                  <option key={st.name} value={st.name}>
-                    {st.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select className="form-select" value={selectedState} onChange={e => setSelectedState(e.target.value)}>
+              <option value="">Select</option>
+              {states.map(st => <option key={st.name} value={st.name}>{st.name}</option>)}
+            </select>
           </div>
           <div className="col-md-2">
             <label className="fw-bold mb-1">Skills</label>
-            <input
-              type="text"
-              className="form-control fs-14"
-              placeholder="e.g. Nursing, Caring"
-              value={skills}
-              onChange={(e) => setSkills(e.target.value)}
-            />
+            <input type="text" className="form-control" value={skills} onChange={e => setSkills(e.target.value)} placeholder="e.g. Nursing" />
           </div>
           <div className="col-md-2">
             <label className="fw-bold mb-1">Category</label>
-            <select
-              className="form-select fs-14"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
+            <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
               <option value="">Select</option>
               <option value="Nurse">Nurse</option>
               <option value="Physiotherapist">Physiotherapist</option>
@@ -222,31 +247,15 @@ const Patient = () => {
           </div>
           <div className="col-md-3">
             <label className="fw-bold mb-1">From</label>
-            <input
-              type="datetime-local"
-              className="form-control fs-14"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
+            <input type="datetime-local" className="form-control" value={fromDate} onChange={e => setFromDate(e.target.value)} />
           </div>
           <div className="col-md-3">
             <label className="fw-bold mb-1">To</label>
-            <input
-              type="datetime-local"
-              className="form-control fs-14"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-            />
+            <input type="datetime-local" className="form-control" value={toDate} onChange={e => setToDate(e.target.value)} />
           </div>
         </div>
-        <div className="d-flex justify-content-end mt-3 text-end">
-          <button
-            className="btn btn-primary"
-            onClick={searchProfessionals}
-            disabled={searching}
-          >
-            {searching ? "Searching..." : "Search"}
-          </button>
+        <div className="d-flex justify-content-end mt-3">
+          <button className="btn btn-primary" onClick={searchProfessionals} disabled={searching}>{searching ? "Searching..." : "Search"}</button>
         </div>
       </div>
 
@@ -260,79 +269,82 @@ const Patient = () => {
             <th>Skills</th>
             <th>Location</th>
             <th>Role</th>
-            <th>Availability</th>
             <th>Book</th>
           </tr>
         </thead>
-
         <tbody>
-          {results.length === 0 ? (
-            <tr>
-              <td colSpan="8" className="text-center">No results found</td>
-            </tr>
-          ) : (
+          {results.length === 0 ? <tr><td colSpan="7" className="text-center">No results found</td></tr> :
             results.map((p, i) => (
               <tr key={p.id}>
                 <td>{i + 1}</td>
-                <td className="text-center">
-                  {p.profile_photo ? (
-                    <img
-                      src={getProfilePhotoUrl(p.profile_photo)}
-                      alt="Profile"
-                      width="50"
-                      height="50"
-                      style={{
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  ) : (
-                    <span className="text-muted">No Photo</span>
-                  )}
-                </td>
+                <td className="text-center">{p.profile_photo ? <img src={getProfilePhotoUrl(p.profile_photo)} alt="Profile" width="50" height="50" style={{ borderRadius: "50%", objectFit: "cover" }} /> : <span className="text-muted">No Photo</span>}</td>
                 <td>{p.full_name}</td>
                 <td>{p.skills}</td>
-                <td>
-                  {typeof p.state === "string" ? p.state : p.state?.name}
-                </td>
+                <td>{p.state}</td>
                 <td>{p.category}</td>
-                <td>
-                  {p.availability.length === 0 ? (
-                    <span>No slots</span>
-                  ) : (
-                    <div className="d-flex flex-column gap-1">
-                      {p.availability.map((a, idx) => (
-                        <label key={idx} className="d-flex align-items-center gap-2">
-                          <input
-                            type="radio"
-                            name={`slot-${p.id}`}
-                            value={idx}
-                            onChange={() => setSelectedSlot(p.id, idx)}
-                            checked={selected[p.id] === idx}
-                          />
-                          <span>
-                            {new Date(a.from_datetime).toLocaleString("en-GB", { hour12: false })} —{" "}
-                            {new Date(a.to_datetime).toLocaleString("en-GB", { hour12: false })}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-success fs-12"
-                    onClick={() => handleBook(p.id)}
-                    disabled={selected[p.id] === undefined}
-                  >
-                    Book Appointment
-                  </button>
-                </td>
+                <td><button className="btn btn-sm btn-success" onClick={() => handleOpenModal(p)}>Book Appointment</button></td>
               </tr>
             ))
-          )}
+          }
         </tbody>
       </table>
+
+      {/* Booking Modal */}
+      <Modal show={modalOpen} onHide={() => setModalOpen(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Book Appointment with {currentProfessional?.full_name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {Object.keys(availableSlots).length === 0 ? <p>No available slots</p> :
+          <>
+            {selectionStep !== "done" && (
+              <div className="row">
+                <div className="col-md-9">
+                  <Calendar
+                    value={selectionStep === "from" ? selectedDate.from : selectedDate.to}
+                    onChange={(date) => {
+                      setSelectedDate(prev => selectionStep === "from" ? { ...prev, from: date } : { ...prev, to: date });
+                      selectionStep === "from" ? setFromDateTime("") : setToDateTime("");
+                    }}
+                    tileDisabled={tileDisabled}
+                    tileClassName={tileClassName}
+                  />
+                </div>
+                <div className="col-md-3">
+                  {selectedDate[selectionStep] && (
+                    <>
+                      <label className="fw-bold">{selectionStep === "from" ? "From Time" : "To Time"}</label>
+                      <select className="form-select" value="" onChange={(e) => {
+                        const time = e.target.value;
+                        const [h,m] = time.split(":");
+                        const dt = new Date(selectedDate[selectionStep]);
+                        dt.setHours(h,m,0,0);
+                        const formatted = formatLocalDateTime(dt);
+                        if (selectionStep === "from") { setFromDateTime(formatted); setSelectionStep("to"); } 
+                        else { setToDateTime(formatted); setSelectionStep("done"); }
+                      }}>
+                        <option value="">Select</option>
+                        {getAvailableTimesForDate(selectedDate[selectionStep]).map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+            {fromDateTime && toDateTime && (
+              <div className="mt-3">
+                <label className="fw-bold">Selected Appointment</label>
+                <input type="text" className="form-control mb-2" value={fromDateTime} readOnly />
+                <input type="text" className="form-control" value={toDateTime} readOnly />
+              </div>
+            )}
+          </>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleConfirmBooking}>Confirm Booking</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -51,28 +51,28 @@ export default function ProfessionalStatus() {
   let badge;
   switch (status) {
     case "not_submitted":
-      badge = <span className="badge bg-secondary">Not Submitted</span>;
+      badge = <span className="badge bg-danger p-2 fs-16">Not Submitted</span>;
       break;
     case "pending":
-      badge = <span className="badge bg-warning text-dark">Pending Approval</span>;
+      badge = <span className="badge bg-warning text-dark p-2 fs-14">Pending Approval</span>;
       break;
     case "approved":
-      badge = <span className="badge bg-success">Approved</span>;
+      badge = <span className="badge bg-info p-2 fs-14">Approved</span>;
       break;
     case "rejected":
-      badge = <span className="badge bg-danger">Rejected</span>;
+      badge = <span className="badge bg-danger p-2 fs-14">Rejected</span>;
       break;
     default:
-      badge = <span className="badge bg-secondary">Unknown</span>;
+      badge = <span className="badge bg-danger p-2 fs-14">Unknown</span>;
   }
 
   return (
     <div>
-      <span className="fs-14 fw-semibold">Status: </span>
+      <span className="fs-16 fw-semibold text-blue">Profile Status: </span>
       {badge}
 
       {status === "rejected" && rejectionReason && (
-        <p className="text-danger mt-1 fs-12">
+        <p className="text-danger fw-semibold mt-2 fs-16">
           Reason: {rejectionReason}
         </p>
       )}
