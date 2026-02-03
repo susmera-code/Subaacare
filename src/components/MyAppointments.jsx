@@ -46,7 +46,7 @@ const MyAppointments = () => {
   const toInputDateTime = (value) => {
     if (!value) return "";
     const d = new Date(value);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}T${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   };
 
   const startEdit = (appt) => {
@@ -94,6 +94,7 @@ const MyAppointments = () => {
         from_datetime,
         to_datetime,
         status,
+        payment_status,
         professionals!inner(
           full_name,
           profile_photo,
@@ -149,20 +150,22 @@ const MyAppointments = () => {
             <div className="accordion-body d-flex flex-column gap-3">
               {upcoming.length === 0 && <p className="text-muted">No upcoming appointments</p>}
               {upcoming.map(appt => (
-  <AppointmentCard
-    key={appt.id}
-    appt={appt}
-    editingId={editingId}
-    startEdit={startEdit}
-    saveEdit={saveEdit}
-    openCancelModal={openCancelModal}
-    editFrom={editFrom}
-    setEditFrom={setEditFrom}
-    editTo={editTo}
-    setEditTo={setEditTo}
-    formatDateTime={formatDateTime} // 👈 pass it
-  />
-))}
+                <AppointmentCard
+                  key={appt.id}
+                  appt={appt}
+                  editingId={editingId}
+                  startEdit={startEdit}
+                  saveEdit={saveEdit}
+                  openCancelModal={openCancelModal}
+                  editFrom={editFrom}
+                  setEditFrom={setEditFrom}
+                  editTo={editTo}
+                  setEditTo={setEditTo}
+                  formatDateTime={formatDateTime}
+                  fetchAppointments={() => fetchAppointments(userId)}
+                  setEditingId={setEditingId}
+                />
+              ))}
 
             </div>
           </div>
@@ -211,13 +214,13 @@ const MyAppointments = () => {
 };
 
 // ---------------- Appointment Card Component ----------------
-const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal, editFrom, setEditFrom, editTo, setEditTo }) => {
- const isUpcoming = new Date(appt.from_datetime) >= new Date();
+const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal, editFrom, setEditFrom, editTo, setEditTo, fetchAppointments, setEditingId }) => {
+  const isUpcoming = new Date(appt.from_datetime) >= new Date();
 
   const statusColor =
     appt.status === "accepted" ? "bg-success" :
-    appt.status === "pending" ? "bg-warning text-dark" :
-    "bg-danger";
+      appt.status === "pending" ? "bg-warning text-dark" :
+        "bg-danger";
 
   return (
     <div className="card shadow-sm border-0 p-0" style={{ borderRadius: "12px" }}>
@@ -252,26 +255,40 @@ const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal
             ) : formatDateTime(appt.to_datetime)}
           </div>
           <div>
-             {/* ✅ PAYMENT COLUMN */}
-                     {appt.status === "accepted" && isUpcoming ? (
-  <a
-    onClick={() =>
-      startRazorpayPayment({
-        amount: 500,
-        name: "Test User",
-        email: "test@example.com",
-        phone: "9876543210",
-        onSuccess: () => alert("Payment success"),
-        onFailure: () => alert("Payment failed"),
-      })
-    }
-    className="text-decoration-underline c-pointer"
-  >
-    Pay Now
-  </a>
-) : (
-  <span className="text-muted">NA</span>
-)}
+            {/* ✅ PAYMENT COLUMN */}
+            {appt.status === "accepted" && isUpcoming ? (
+              appt.payment_status === "paid" ? (
+                <span className="badge bg-success">Paid</span>
+              ) : (
+                <a
+                  onClick={() =>
+                    startRazorpayPayment({
+                      amount: 500,
+                      name: "Test User",
+                      email: "test@example.com",
+                      phone: "9876543210",
+                      onSuccess: async (response) => {
+                        console.log("Razorpay payment response:", response);
+                        const { data, error } = await supabase
+                          .from("appointments")
+                          .update({ payment_status: "paid", razorpay_payment_id: response.razorpay_payment_id })
+                          .eq("id", appt.id)
+                          .select();
+
+                        console.log("Supabase update:", data, error);
+
+                        if (error) return alert("Payment done but status update failed: " + error.message);
+
+                        fetchAppointments();
+                        alert("Payment successful");
+                      },
+                      onFailure: () => alert("Payment failed"),
+                    })
+                  }
+                  className="text-decoration-underline c-pointer">Pay Now</a>)
+            ) : (
+              <span className="text-muted">NA</span>
+            )}
 
           </div>
         </div>
@@ -279,24 +296,56 @@ const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal
         {/* RIGHT */}
         <div className="d-flex col-md-3 justify-content-center align-items-center">
           <div className="text-center">
-            <span className={`badge ${statusColor} px-3 py-2 mb-3`} style={{ borderRadius: "20px" }}>
+            <span className={`badge ${statusColor} px-3 py-2 mb-3`}>
               {appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}
             </span>
-            {appt.status === "pending" && (
+            {isUpcoming && (
               <div className="d-flex flex-row gap-2">
+
+                {/* 🟢 EDIT MODE */}
                 {editingId === appt.id ? (
                   <>
-                    <button className="btn btn-sm btn-success" onClick={() => saveEdit(appt.id)}>Save</button>
-                    <button className="btn btn-sm btn-outline-secondary" onClick={() => startEdit(appt)}>Cancel</button>
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={() => saveEdit(appt.id)}
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => setEditingId(null)}
+                    >
+                      Cancel
+                    </button>
                   </>
                 ) : (
                   <>
-                    <button className="btn btn-sm btn-outline-primary" onClick={() => startEdit(appt)}>Edit</button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => openCancelModal(appt)}>Cancel</button>
+                    {/* ✏️ EDIT: Pending OR Accepted but NOT Paid */}
+                    {(appt.status === "pending" ||
+                      (appt.status === "accepted" && appt.payment_status !== "paid")) && (
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => startEdit(appt)}
+                        >
+                          Edit
+                        </button>
+                      )}
+
+                    {/* ❌ CANCEL: Pending OR Accepted */}
+                    {(appt.status === "pending" || appt.status === "accepted") && (
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => openCancelModal(appt)}
+                      >
+                        Cancel Appointment
+                      </button>
+                    )}
                   </>
                 )}
               </div>
             )}
+
           </div>
         </div>
       </div>

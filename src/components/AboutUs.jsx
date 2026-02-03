@@ -1,8 +1,10 @@
 export default function AboutUs() {
   return (
-    <div className="container my-5">
+
+    <div className="container">
+      <h2 className="mb-3 text-primary fw-bold text-blue">About Us</h2>
       <div className="card shadow-sm p-4 rounded-4 bg-white text-start">
-        <h3 className="mb-3 text-primary fw-bold text-blue">About Us</h3>
+
         <p>
           At <strong>Subaa Care</strong>, our mission is simple yet deeply personal —
           to bring trusted, verified, and compassionate healthcare professionals to
@@ -74,14 +76,14 @@ export default function AboutUs() {
           To deliver safe, verified, compassionate, and accessible nursing and
           physiotherapy services through a transparent and technology-enabled platform.
         </p>
-
+      </div>
+      <div className="card mt-4 p-1">
         <h5 className="mt-4 fw-bold text-primary text-blue">Because Care Begins at Home</h5>
-        <p className="fw-semibold">
+        <p className="fw-semibold mt-1 mb-0">
           At Subaa Care, every service is designed with one belief in mind:
           <br />
           <em>Healthcare is not just about treatment — it’s about trust, dignity, and compassion.</em>
         </p>
-
       </div>
     </div>
   );

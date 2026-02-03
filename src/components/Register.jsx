@@ -126,6 +126,29 @@ export default function Register() {
                 placeholder="Enter password"
                 errorId="passwordError"
               />
+{/* Password criteria (hidden by default) */}
+<div
+  id="passwordCriteria"
+  className="fs-12 mt-2 mb-2 text-start"
+  style={{ display: "none" }}
+>
+  <p id="pw-lowercase" className="mb-0 mt-0 text-danger">
+    • At least 1 lowercase letter
+  </p>
+  <p id="pw-uppercase" className="mb-0 mt-0 text-danger">
+    • At least 1 uppercase letter
+  </p>
+  <p id="pw-number" className="mb-0 mt-0 text-danger">
+    • At least 1 number
+  </p>
+  <p id="pw-special" className="mb-0 mt-0 text-danger">
+    • At least 1 special character (!@#$%^&*)
+  </p>
+  <p id="pw-length" className="mb-0 mt-0 text-danger">
+    • Minimum 8 characters
+  </p>
+</div>
+
 
               <PasswordInput
                 id="confirmPassword"
@@ -281,6 +304,29 @@ export default function Register() {
               placeholder="Enter password"
               errorId="proPasswordError"
             />
+{/* Password criteria (hidden by default) */}
+<div
+  id="passwordCriteria"
+  className="fs-12 mt-2 mb-2 text-start"
+  style={{ display: "none" }}
+>
+  <p id="pw-lowercase" className="mb-0 mt-0 text-danger">
+    • At least 1 lowercase letter
+  </p>
+  <p id="pw-uppercase" className="mb-0 mt-0 text-danger">
+    • At least 1 uppercase letter
+  </p>
+  <p id="pw-number" className="mb-0 mt-0 text-danger">
+    • At least 1 number
+  </p>
+  <p id="pw-special" className="mb-0 mt-0 text-danger">
+    • At least 1 special character (!@#$%^&*)
+  </p>
+  <p id="pw-length" className="mb-0 mt-0 text-danger">
+    • Minimum 8 characters
+  </p>
+</div>
+
 
             <PasswordInput
               id="proConfirmPassword"

@@ -28,17 +28,17 @@ const ProfessionalDashboard = () => {
     const minutes = String(d.getMinutes()).padStart(2, "0");
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
-const formatForSupabase = (datetime) => {
-  if (!datetime) return null;
-  const d = new Date(datetime);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const hours = String(d.getHours()).padStart(2, "0");
-  const minutes = String(d.getMinutes()).padStart(2, "0");
-  const seconds = "00"; // add seconds
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
+  const formatForSupabase = (datetime) => {
+    if (!datetime) return null;
+    const d = new Date(datetime);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const seconds = "00"; // add seconds
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
 
   // -------------------- Auth & Approval --------------------
   useEffect(() => {
@@ -75,7 +75,7 @@ const formatForSupabase = (datetime) => {
       .from("professional_availability")
       .select("*")
       .eq("professional_id", id)
-      
+
     setAvailability(data || []);
   };
 
@@ -90,6 +90,7 @@ const formatForSupabase = (datetime) => {
       from_datetime,
       to_datetime,
       status,
+      payment_status,
       patients!inner(full_name)
     `)
       .eq("professional_id", profId)
@@ -130,8 +131,6 @@ const formatForSupabase = (datetime) => {
     }
   };
 
-
-
   // -------------------- Availability Management --------------------
   const handleEdit = (slot) => {
     setEditingId(slot.id);
@@ -153,10 +152,10 @@ const formatForSupabase = (datetime) => {
       setError("End time must be after start time");
       return;
     }
-const payload = {
-  from_datetime: formatForSupabase(fromDateTime),
-  to_datetime: formatForSupabase(toDateTime),
-};
+    const payload = {
+      from_datetime: formatForSupabase(fromDateTime),
+      to_datetime: formatForSupabase(toDateTime),
+    };
 
 
     let response;
@@ -208,23 +207,23 @@ const payload = {
     setToDateTime("");
     setError("");
   };
-// -------------------- Appointment Sorting --------------------
-const now = new Date();
+  // -------------------- Appointment Sorting --------------------
+  const now = new Date();
 
-const upcomingAppointments = appointments
-  .filter(appt => new Date(appt.from_datetime) >= now)
-  .sort((a, b) => new Date(a.from_datetime) - new Date(b.from_datetime));
+  const upcomingAppointments = appointments
+    .filter(appt => new Date(appt.from_datetime) >= now)
+    .sort((a, b) => new Date(a.from_datetime) - new Date(b.from_datetime));
 
-const pastAppointments = appointments
-  .filter(appt => new Date(appt.from_datetime) < now)
-  .sort((a, b) => new Date(b.from_datetime) - new Date(a.from_datetime));
-const upcomingAvailability = availability
-  .filter(slot => new Date(slot.from_datetime) >= now)
-  .sort((a, b) => new Date(a.from_datetime) - new Date(b.from_datetime));
+  const pastAppointments = appointments
+    .filter(appt => new Date(appt.from_datetime) < now)
+    .sort((a, b) => new Date(b.from_datetime) - new Date(a.from_datetime));
+  const upcomingAvailability = availability
+    .filter(slot => new Date(slot.from_datetime) >= now)
+    .sort((a, b) => new Date(a.from_datetime) - new Date(b.from_datetime));
 
-const pastAvailability = availability
-  .filter(slot => new Date(slot.from_datetime) < now)
-  .sort((a, b) => new Date(b.from_datetime) - new Date(a.from_datetime));
+  const pastAvailability = availability
+    .filter(slot => new Date(slot.from_datetime) < now)
+    .sort((a, b) => new Date(b.from_datetime) - new Date(a.from_datetime));
 
   if (loading) return <p>Checking approval status...</p>;
 
@@ -234,12 +233,12 @@ const pastAvailability = availability
 
       <div className="mb-3 text-end">
         <button
-          className="btn btn-outline-primary me-2 fs-12 fw-semibold"
+          className="btn btn-outline-primary me-2 fs-14 fw-semibold"
           onClick={() => setShowModal(true)}
         >Add Availability</button>
 
         <button
-          className="btn btn-outline-secondary fs-12 fw-semibold"
+          className="btn btn-outline-secondary fs-14 fw-semibold"
           onClick={() => { setActiveView("availability"); setShowModal(false); }}
         >Edit Availability</button>
       </div>
@@ -309,6 +308,7 @@ const pastAvailability = availability
                       <th>Patient Name</th>
                       <th>From</th>
                       <th>To</th>
+                      <th>Payment</th>
                       <th>Actions / Status</th>
                     </tr>
                   </thead>
@@ -327,6 +327,16 @@ const pastAvailability = availability
                             <td>{appt.patients?.full_name || "Unknown"}</td>
                             <td>{fromDT.toLocaleDateString("en-GB")} {fromDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
                             <td>{toDT.toLocaleDateString("en-GB")} {toDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
+                            <td>
+                              {appt.status !== "accepted" ? (
+                                <span className="badge bg-secondary">NA</span>
+                              ) : appt.payment_status === "paid" ? (
+                                <span className="badge bg-success">Paid</span>
+                              ) : (
+                                <span className="badge bg-warning text-dark">Pending</span>
+                              )}
+                            </td>
+
                             <td>
                               {appt.status === "pending" ? (
                                 <>
@@ -419,80 +429,77 @@ const pastAvailability = availability
       )}
 
       {/* -------------------- Availability Table -------------------- */}
-     {activeView === "availability" && (
-  <div className="mt-3">
+      {activeView === "availability" && (
+        <div className="mt-3">
 
-    {/* Upcoming / Current Availability */}
-    <h4 className="fw-semibold mb-2 text-blue">Upcoming Availability</h4>
-    <div className="table-responsive mb-4">
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>From</th>
-            <th>To</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {upcomingAvailability.length === 0 ? (
-            <tr><td colSpan="3" className="text-center">No upcoming availability</td></tr>
-          ) : (
-            upcomingAvailability.map(slot => (
-              <tr key={slot.id}>
-                <td>{formatDateTime(slot.from_datetime)}</td>
-                <td>{formatDateTime(slot.to_datetime)}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-warning me-2"
-                    onClick={() => handleEdit(slot)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(slot.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+          {/* Upcoming / Current Availability */}
+          <h4 className="fw-semibold mb-2 text-blue">Upcoming Availability</h4>
+          <div className="table-responsive mb-4">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingAvailability.length === 0 ? (
+                  <tr><td colSpan="3" className="text-center">No upcoming availability</td></tr>
+                ) : (
+                  upcomingAvailability.map(slot => (
+                    <tr key={slot.id}>
+                      <td>{formatDateTime(slot.from_datetime)}</td>
+                      <td>{formatDateTime(slot.to_datetime)}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-warning me-2"
+                          onClick={() => handleEdit(slot)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(slot.id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
-    {/* Past Availability */}
-    <h4 className="fw-semibold mb-2 text-blue">Past Availability</h4>
-    <div className="table-responsive">
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>From</th>
-            <th>To</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pastAvailability.length === 0 ? (
-            <tr><td colSpan="3" className="text-center">No past availability</td></tr>
-          ) : (
-            pastAvailability.map(slot => (
-              <tr key={slot.id}>
-                <td>{formatDateTime(slot.from_datetime)}</td>
-                <td>{formatDateTime(slot.to_datetime)}</td>
-                <td><span className="badge bg-secondary">Expired</span></td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-
-  </div>
-)}
-
-
+          {/* Past Availability */}
+          <h4 className="fw-semibold mb-2 text-blue">Past Availability</h4>
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pastAvailability.length === 0 ? (
+                  <tr><td colSpan="3" className="text-center">No past availability</td></tr>
+                ) : (
+                  pastAvailability.map(slot => (
+                    <tr key={slot.id}>
+                      <td>{formatDateTime(slot.from_datetime)}</td>
+                      <td>{formatDateTime(slot.to_datetime)}</td>
+                      <td><span className="badge bg-secondary">Expired</span></td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
