@@ -329,11 +329,11 @@ const ProfessionalDashboard = () => {
                             <td>{toDT.toLocaleDateString("en-GB")} {toDT.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" })}</td>
                             <td>
                               {appt.status !== "accepted" ? (
-                                <span className="badge bg-secondary">NA</span>
+                                <span className="text-warning">Pending</span>
                               ) : appt.payment_status === "paid" ? (
                                 <span className="badge bg-success">Paid</span>
                               ) : (
-                                <span className="badge bg-warning text-dark">Pending</span>
+                                <span className="text-warning">Pending</span>
                               )}
                             </td>
 

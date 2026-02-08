@@ -25,12 +25,27 @@ const MyAppointments = () => {
     setShowCancelModal(true);
   };
 
-  // Confirm cancellation
+
+  {/* Cancelled logic */ }
   const confirmCancel = async () => {
     if (!cancelAppt) return;
+
+    // STRICT paid check
+    const isPaid = cancelAppt.payment_status === "paid";
+
+    const updateData = isPaid
+      ? {
+        status: "cancelled",
+        payment_status: "refund initiated"
+      }
+      : {
+        status: "cancelled",
+        payment_status: "cancelled"   // unpaid cancellation
+      };
+
     const { error } = await supabase
       .from("appointments")
-      .delete()
+      .update(updateData)
       .eq("id", cancelAppt.id);
 
     if (error) {
@@ -38,9 +53,15 @@ const MyAppointments = () => {
       return;
     }
 
-    setAppointments((prev) => prev.filter((a) => a.id !== cancelAppt.id));
+    fetchAppointments(userId);
+
     setShowCancelModal(false);
     setCancelAppt(null);
+
+    alert(isPaid
+      ? "Appointment cancelled. Refund initiated."
+      : "Appointment cancelled."
+    );
   };
 
   const toInputDateTime = (value) => {
@@ -234,7 +255,7 @@ const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal
             style={{ width: "64px", height: "64px", objectFit: "cover", border: "1px solid #e5e7eb" }}
           />
           <div>
-            <h5 className="fw-semibold mb-1">{appt.professionals?.full_name}</h5>
+            <h5 className="fw-semibold mb-1 text-blue">{appt.professionals?.full_name}</h5>
             <div className="text-muted">{appt.professionals?.category}</div>
             <div className="text-muted">{[appt.professionals?.city, appt.professionals?.state].filter(Boolean).join(", ")}</div>
           </div>
@@ -256,41 +277,73 @@ const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal
           </div>
           <div>
             {/* ✅ PAYMENT COLUMN */}
-            {appt.status === "accepted" && isUpcoming ? (
-              appt.payment_status === "paid" ? (
-                <span className="badge bg-success">Paid</span>
-              ) : (
-                <a
-                  onClick={() =>
-                    startRazorpayPayment({
-                      amount: 500,
-                      name: "Test User",
-                      email: "test@example.com",
-                      phone: "9876543210",
-                      onSuccess: async (response) => {
-                        console.log("Razorpay payment response:", response);
-                        const { data, error } = await supabase
-                          .from("appointments")
-                          .update({ payment_status: "paid", razorpay_payment_id: response.razorpay_payment_id })
-                          .eq("id", appt.id)
-                          .select();
+            {isUpcoming && (
+              <>
+                {/* Accepted appointments */}
 
-                        console.log("Supabase update:", data, error);
+                {appt.status === "accepted" && appt.payment_status === "paid" && (
+                  <span className="badge bg-success">Paid</span>
+                )}
+                {/* 💳 PAY NOW */}
+                {appt.status === "accepted" && appt.payment_status !== "paid" && (
+                  <a
+                    onClick={() =>
+                      startRazorpayPayment({
+                        amount: 500,
+                        name: "Test User",
+                        email: "test@example.com",
+                        phone: "9876543210",
+                        onSuccess: async (response) => {
+                          const { error } = await supabase
+                            .from("appointments")
+                            .update({
+                              payment_status: "paid",
+                              razorpay_payment_id: response.razorpay_payment_id
+                            })
+                            .eq("id", appt.id);
 
-                        if (error) return alert("Payment done but status update failed: " + error.message);
+                          if (error) {
+                            alert("Payment done but status update failed: " + error.message);
+                            return;
+                          }
 
-                        fetchAppointments();
-                        alert("Payment successful");
-                      },
-                      onFailure: () => alert("Payment failed"),
-                    })
-                  }
-                  className="text-decoration-underline c-pointer">Pay Now</a>)
-            ) : (
-              <span className="text-muted">NA</span>
+                          fetchAppointments();
+                          alert("Payment successful");
+                        },
+                        onFailure: () => alert("Payment failed"),
+                      })
+                    }
+                    className="text-decoration-underline c-pointer"
+                  >
+                    Pay Now
+                  </a>
+                )}
+
+
+                {/* Pending only */}
+                {appt.status === "pending" && (
+                  <span className="text-warning">Waiting for approval</span>
+                )}
+
+                {/* Rejected → show nothing */}
+                {appt.status === "rejected" && (
+                  <span className="text-muted">Not Applicable</span>
+                )}
+
+                {appt.status === "cancelled" && (
+                  appt.payment_status === "refund initiated" ? (
+                    <span className="badge bg-info text-dark">Refund Initiated</span>
+                  ) : (
+                    <span className="text-muted">Cancelled</span>
+                  )
+                )}
+
+
+
+              </>
             )}
-
           </div>
+
         </div>
 
         {/* RIGHT */}
