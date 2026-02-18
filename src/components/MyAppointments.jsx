@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import { startRazorpayPayment } from "../utils/razorpay";
+import { useNavigate } from "react-router-dom";
+
 const formatDateTime = (datetime) => {
   if (!datetime) return "";
   const d = new Date(datetime);
@@ -25,6 +27,7 @@ const MyAppointments = () => {
     setShowCancelModal(true);
   };
 
+  const navigate = useNavigate();
 
   {/* Cancelled logic */ }
   const confirmCancel = async () => {
@@ -168,8 +171,16 @@ const MyAppointments = () => {
             </button>
           </h2>
           <div id="upcomingCollapse" className="accordion-collapse collapse show" aria-labelledby="upcomingHeading" data-bs-parent="#appointmentsAccordion">
-            <div className="accordion-body d-flex flex-column gap-3">
-              {upcoming.length === 0 && <p className="text-muted">No upcoming appointments</p>}
+            <div className="accordion-body d-flex flex-column">
+              {upcoming.length === 0 && <><p className="text-muted">No upcoming appointments</p>
+                <a
+                  href="/patient"
+                  className="fw-semibold text-primary text-decoration-underline"
+                  style={{ fontSize: "15px" }}
+                >
+                  + Create New Appointment
+                </a>
+              </>}
               {upcoming.map(appt => (
                 <AppointmentCard
                   key={appt.id}
@@ -332,18 +343,14 @@ const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal
 
                 {appt.status === "cancelled" && (
                   appt.payment_status === "refund initiated" ? (
-                    <span className="badge bg-info text-dark">Refund Initiated</span>
+                    <span className="badge bg-info text-white">Refund Initiated</span>
                   ) : (
                     <span className="text-muted">Cancelled</span>
                   )
                 )}
-
-
-
               </>
             )}
           </div>
-
         </div>
 
         {/* RIGHT */}

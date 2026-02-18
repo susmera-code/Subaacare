@@ -20,6 +20,7 @@ const Patient = () => {
   const [error, setError] = useState("");
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
+  const [city, setCity] = useState("");
 
   // Booking state
   const [selectionStep, setSelectionStep] = useState("from");
@@ -55,14 +56,14 @@ const Patient = () => {
     if (!value) return null;
     const date = typeof value === "string" ? new Date(value) : value;
     if (!(date instanceof Date) || isNaN(date)) return null;
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   };
 
- const formatLocalDateTime = (date) => {
-  if (!date) return "";
-  const pad = (n) => n.toString().padStart(2,"0");
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
-};
+  const formatLocalDateTime = (date) => {
+    if (!date) return "";
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+  };
 
   const addDays = (date, days) => {
     const d = new Date(date);
@@ -72,12 +73,33 @@ const Patient = () => {
 
   const tileDisabled = ({ date, view }) => {
     if (view !== "month") return false;
+
     const today = new Date();
-    today.setHours(0,0,0,0);
-    date.setHours(0,0,0,0);
-    const key = toDateKey(date);
-    return date < today || !availableSlots[key];
+    today.setHours(0, 0, 0, 0);
+
+    const tileDate = new Date(date);
+    tileDate.setHours(0, 0, 0, 0);
+
+    const key = toDateKey(tileDate);
+
+    // 🚫 past dates
+    if (tileDate < today) return true;
+
+    // 🚫 no availability
+    if (!availableSlots[key]) return true;
+
+    // 🚫 if selecting "to", block dates before selected "from"
+    if (
+      selectionStep === "to" &&
+      selectedDate.from &&
+      tileDate < new Date(toDateKey(selectedDate.from))
+    ) {
+      return true;
+    }
+
+    return false;
   };
+
 
   const tileClassName = ({ date, view }) => {
     if (view !== "month") return "";
@@ -91,10 +113,10 @@ const Patient = () => {
   const handleOpenModal = (prof) => {
     const grouped = {};
     (prof.availability || []).forEach(slot => {
-      const start = new Date(slot.from_datetime.replace(" ","T"));
-      const end = new Date(slot.to_datetime.replace(" ","T"));
-      let current = new Date(start); current.setHours(0,0,0,0);
-      end.setHours(0,0,0,0);
+      const start = new Date(slot.from_datetime.replace(" ", "T"));
+      const end = new Date(slot.to_datetime.replace(" ", "T"));
+      let current = new Date(start); current.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
       while (current <= end) {
         const key = toDateKey(current);
         if (!grouped[key]) grouped[key] = [];
@@ -117,12 +139,12 @@ const Patient = () => {
     const key = toDateKey(date);
     const slots = availableSlots[key] || [];
     return slots.flatMap(slot => {
-      const start = new Date(slot.from_datetime.replace(" ","T"));
-      const end = new Date(slot.to_datetime.replace(" ","T"));
+      const start = new Date(slot.from_datetime.replace(" ", "T"));
+      const end = new Date(slot.to_datetime.replace(" ", "T"));
       const times = [];
       const current = new Date(start);
       while (current <= end) {
-        times.push(`${current.getHours().toString().padStart(2,"0")}:${current.getMinutes().toString().padStart(2,"0")}`);
+        times.push(`${current.getHours().toString().padStart(2, "0")}:${current.getMinutes().toString().padStart(2, "0")}`);
         current.setMinutes(current.getMinutes() + 30);
       }
       return times;
@@ -131,56 +153,57 @@ const Patient = () => {
 
   // Confirm booking
   const handleConfirmBooking = async () => {
-  if (!fromDateTime || !toDateTime) return alert("Please select from and to date & time");
+    if (!fromDateTime || !toDateTime) return alert("Please select from and to date & time");
 
-  // Parse into Date objects
-  const from = new Date(fromDateTime);
-  const to = new Date(toDateTime);
+    // Parse into Date objects
+    const from = new Date(fromDateTime);
+    const to = new Date(toDateTime);
 
-  if (isNaN(from.getTime()) || isNaN(to.getTime())) return alert("Invalid date/time selected");
-  if (from >= to) return alert("From datetime must be before To datetime");
+    if (isNaN(from.getTime()) || isNaN(to.getTime())) return alert("Invalid date/time selected");
+    if (from >= to) return alert("From datetime must be before To datetime");
 
-  const dayKey = toDateKey(from);
-  const daySlots = availableSlots[dayKey] || [];
-  const isWithinAvailability = daySlots.some(slot => {
-    const slotFrom = new Date(slot.from_datetime.replace(" ","T"));
-    const slotTo = new Date(slot.to_datetime.replace(" ","T"));
-    return from >= slotFrom && to <= slotTo;
-  });
-  if (!isWithinAvailability) return alert("Selected time is outside availability");
-
-  try {
-    const { data: { user }, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
-
-    const { data, error } = await supabase.from("appointments").insert({
-      professional_id: currentProfessional.id,
-      patient_id: user.id,
-      from_datetime: formatLocalDateTime(from), // guaranteed YYYY-MM-DD HH:MM:SS
-      to_datetime: formatLocalDateTime(to)
+    const dayKey = toDateKey(from);
+    const daySlots = availableSlots[dayKey] || [];
+    const isWithinAvailability = daySlots.some(slot => {
+      const slotFrom = new Date(slot.from_datetime.replace(" ", "T"));
+      const slotTo = new Date(slot.to_datetime.replace(" ", "T"));
+      return from >= slotFrom && to <= slotTo;
     });
+    if (!isWithinAvailability) return alert("Selected time is outside availability");
 
-    if (error) throw error;
+    try {
+      const { data: { user }, error: userErr } = await supabase.auth.getUser();
+      if (userErr) throw userErr;
 
-    alert("Appointment booked successfully!");
-    setModalOpen(false);
-  } catch (err) {
-    console.error(err);
-    alert(err.message || "Failed to book appointment");
-  }
-};
+      const { data, error } = await supabase.from("appointments").insert({
+        professional_id: currentProfessional.id,
+        patient_id: user.id,
+        from_datetime: formatLocalDateTime(from), // guaranteed YYYY-MM-DD HH:MM:SS
+        to_datetime: formatLocalDateTime(to)
+      });
+
+      if (error) throw error;
+
+      alert("Appointment booked successfully!");
+      setModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Failed to book appointment");
+    }
+  };
 
 
   // Search professionals
-  const toPgTimestamp = (value) => value ? value.replace("T"," ") + ":00" : null;
+  const toPgTimestamp = (value) => value ? value.replace("T", " ") + ":00" : null;
   const searchProfessionals = async () => {
     setSearching(true); setError(""); setResults([]);
     try {
       const searchFrom = fromDate ? toPgTimestamp(fromDate) : null;
       const searchTo = toDate ? toPgTimestamp(toDate) : null;
 
-      let profQuery = supabase.from("professionals").select("id, full_name, skills, state, category, email, profile_photo");
+      let profQuery = supabase.from("professionals").select("id, full_name, skills, state, city, category, email, profile_photo");
       if (selectedState) profQuery = profQuery.eq("state", selectedState);
+      if (city) profQuery = profQuery.ilike("city", `%${city}%`);
       if (category) profQuery = profQuery.eq("category", category);
       if (skills) {
         const skillsArray = skills.split(",").map(s => s.trim()).filter(Boolean);
@@ -218,20 +241,31 @@ const Patient = () => {
 
   return (
     <div className="container">
-      <h2>Welcome, {profile.full_name}</h2>
+      <h2 className="text-blue fw-bold">Welcome, {profile.full_name}</h2>
 
       {/* Search Form */}
       <div className="card shadow-lg rounded-4 d-flex mt-4 p-3">
-        <h4 className="fw-bold mb-4">Search</h4>
+        <h4 className="fw-bold mb-4 text-blue">Search</h4>
         {error && <p className="text-danger">{error}</p>}
         <div className="row text-start pb-1 search-form">
-          <div className="col-md-2">
-            <label className="fw-bold mb-1">Location</label>
+          <div className="col-md-2 mb-2">
+            <label className="fw-bold mb-1">State</label>
             <select className="form-select" value={selectedState} onChange={e => setSelectedState(e.target.value)}>
               <option value="">Select</option>
               {states.map(st => <option key={st.name} value={st.name}>{st.name}</option>)}
             </select>
           </div>
+          <div className="col-md-2">
+            <label className="fw-bold mb-1">City</label>
+            <input
+              type="text"
+              className="form-control"
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              placeholder="Enter city"
+            />
+          </div>
+
           <div className="col-md-2">
             <label className="fw-bold mb-1">Skills</label>
             <input type="text" className="form-control" value={skills} onChange={e => setSkills(e.target.value)} placeholder="e.g. Nursing" />
@@ -263,24 +297,32 @@ const Patient = () => {
       <table className="table table-striped table-bordered align-middle mt-4">
         <thead className="table-primary">
           <tr>
-            <th>#</th>
-            <th>Photo</th>
-            <th>Name</th>
-            <th>Skills</th>
-            <th>Location</th>
-            <th>Role</th>
-            <th>Book</th>
+            <th className="text-blue">#</th>
+            <th className="text-blue">Photo</th>
+            <th className="text-blue">Name</th>
+            <th className="text-blue">Skills</th>
+            <th className="text-blue">State</th>
+            <th className="text-blue">City</th>
+            <th className="text-blue">Role</th>
+            <th className="text-blue">Book</th>
           </tr>
         </thead>
         <tbody>
-          {results.length === 0 ? <tr><td colSpan="7" className="text-center">No results found</td></tr> :
+          {results.length === 0 ? <tr><td colSpan="8" className="text-center">No results found</td></tr> :
             results.map((p, i) => (
               <tr key={p.id}>
                 <td>{i + 1}</td>
                 <td className="text-center">{p.profile_photo ? <img src={getProfilePhotoUrl(p.profile_photo)} alt="Profile" width="50" height="50" style={{ borderRadius: "50%", objectFit: "cover" }} /> : <span className="text-muted">No Photo</span>}</td>
                 <td>{p.full_name}</td>
-                <td>{p.skills}</td>
+                <td>
+                  {Array.isArray(p.skills) && p.skills.length > 0
+                    ? p.skills.join(", ")
+                    : <span className="text-muted">No skills</span>
+                  }
+                </td>
+
                 <td>{p.state}</td>
+                <td>{p.city}</td>
                 <td>{p.category}</td>
                 <td><button className="btn btn-sm btn-success" onClick={() => handleOpenModal(p)}>Book Appointment</button></td>
               </tr>
@@ -296,53 +338,56 @@ const Patient = () => {
         </Modal.Header>
         <Modal.Body>
           {Object.keys(availableSlots).length === 0 ? <p>No available slots</p> :
-          <>
-            {selectionStep !== "done" && (
-              <div className="row">
-                <div className="col-md-9">
-                  <Calendar
-                    value={selectionStep === "from" ? selectedDate.from : selectedDate.to}
-                    onChange={(date) => {
-                      setSelectedDate(prev => selectionStep === "from" ? { ...prev, from: date } : { ...prev, to: date });
-                      selectionStep === "from" ? setFromDateTime("") : setToDateTime("");
-                    }}
-                    tileDisabled={tileDisabled}
-                    tileClassName={tileClassName}
-                  />
+            <>
+              {selectionStep !== "done" && (
+                <div className="row">
+                  <div className="col-md-9">
+                    <Calendar
+                      value={selectionStep === "from" ? selectedDate.from : selectedDate.to}
+                      onChange={(date) => {
+                        setSelectedDate(prev => selectionStep === "from" ? { ...prev, from: date } : { ...prev, to: date });
+                        selectionStep === "from" ? setFromDateTime("") : setToDateTime("");
+                      }}
+                      tileDisabled={tileDisabled}
+                      tileClassName={tileClassName}
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    {selectedDate[selectionStep] && (
+                      <>
+                        <label className="fw-bold">{selectionStep === "from" ? "From Time" : "To Time"}</label>
+                        <select className="form-select" value="" onChange={(e) => {
+                          const time = e.target.value;
+                          const [h, m] = time.split(":");
+                          const dt = new Date(selectedDate[selectionStep]);
+                          dt.setHours(h, m, 0, 0);
+                          const formatted = formatLocalDateTime(dt);
+                          if (selectionStep === "from") { setFromDateTime(formatted); setSelectionStep("to"); }
+                          else { setToDateTime(formatted); setSelectionStep("done"); }
+                        }}>
+                          <option value="">Select</option>
+                          {getAvailableTimesForDate(selectedDate[selectionStep]).map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="col-md-3">
-                  {selectedDate[selectionStep] && (
-                    <>
-                      <label className="fw-bold">{selectionStep === "from" ? "From Time" : "To Time"}</label>
-                      <select className="form-select" value="" onChange={(e) => {
-                        const time = e.target.value;
-                        const [h,m] = time.split(":");
-                        const dt = new Date(selectedDate[selectionStep]);
-                        dt.setHours(h,m,0,0);
-                        const formatted = formatLocalDateTime(dt);
-                        if (selectionStep === "from") { setFromDateTime(formatted); setSelectionStep("to"); } 
-                        else { setToDateTime(formatted); setSelectionStep("done"); }
-                      }}>
-                        <option value="">Select</option>
-                        {getAvailableTimesForDate(selectedDate[selectionStep]).map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
-                    </>
-                  )}
+              )}
+              {fromDateTime && toDateTime && (
+                <div className="mt-3">
+                  <label className="fw-bold">Selected Appointment</label>
+                  <input type="text" className="form-control mb-2" value={fromDateTime} readOnly />
+                  <input type="text" className="form-control" value={toDateTime} readOnly />
                 </div>
-              </div>
-            )}
-            {fromDateTime && toDateTime && (
-              <div className="mt-3">
-                <label className="fw-bold">Selected Appointment</label>
-                <input type="text" className="form-control mb-2" value={fromDateTime} readOnly />
-                <input type="text" className="form-control" value={toDateTime} readOnly />
-              </div>
-            )}
-          </>}
+              )}
+            </>}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleConfirmBooking}>Confirm Booking</Button>
+          {/* Show Confirm only if slots exist */}
+          {Object.keys(availableSlots).length > 0 && (
+            <Button variant="primary" onClick={handleConfirmBooking}>Confirm Booking</Button>
+          )}
         </Modal.Footer>
       </Modal>
     </div>

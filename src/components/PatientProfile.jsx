@@ -86,7 +86,7 @@ const PatientProfile = () => {
 
   return (
     <div className="container mt-4">
-      <h4 className="fw-semibold mb-4">My Profile</h4>
+      <h4 className="fw-semibold mb-4 text-blue">My Profile</h4>
 
       <div className="card shadow-sm">
         <div className="card-body">
