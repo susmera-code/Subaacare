@@ -214,6 +214,11 @@ a {
   width: 70%;
 }
 
+.pl-3 {
+  padding-left: 3rem !important;
+}
+
+
 textarea {
   height: 5rem !important;
 }
@@ -444,4 +449,17 @@ p {
 .react-calendar__tile {
   border-radius: 0;
   /* keep day tiles square inside the rounded calendar */
+}
+
+.form-floating>.form-control,
+.form-floating>.form-select {
+  height: calc(3.2rem + calc(var(--bs-border-width) * 2)) !important;
+  min-height: calc(3.2rem + calc(var(--bs-border-width) * 2)) !important;
+  line-height: 1;
+  font-size: 15px;
+  border: 2.5px solid #0d6efd !important;
+}
+
+.form-floating>label {
+  padding: 0.8rem 3rem !important;
 }

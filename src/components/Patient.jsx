@@ -5,9 +5,11 @@ import Modal from "react-bootstrap/Modal";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import Button from "react-bootstrap/Button";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 const Patient = () => {
   const [profile, setProfile] = useState(null);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [loading, setLoading] = useState(true);
   const [skills, setSkills] = useState("");
   const [category, setCategory] = useState("");
@@ -244,53 +246,127 @@ const Patient = () => {
       <h2 className="text-blue fw-bold">Welcome, {profile.full_name}</h2>
 
       {/* Search Form */}
-      <div className="card shadow-lg rounded-4 d-flex mt-4 p-3">
-        <h4 className="fw-bold mb-4 text-blue">Search</h4>
+      <div className="mt-5">
         {error && <p className="text-danger">{error}</p>}
-        <div className="row text-start pb-1 search-form">
-          <div className="col-md-2 mb-2">
-            <label className="fw-bold mb-1">State</label>
-            <select className="form-select" value={selectedState} onChange={e => setSelectedState(e.target.value)}>
-              <option value="">Select</option>
-              {states.map(st => <option key={st.name} value={st.name}>{st.name}</option>)}
-            </select>
-          </div>
-          <div className="col-md-2">
-            <label className="fw-bold mb-1">City</label>
-            <input
-              type="text"
-              className="form-control"
-              value={city}
-              onChange={e => setCity(e.target.value)}
-              placeholder="Enter city"
-            />
-          </div>
+       <div className="row text-start pb-1 search-form g-0">
 
-          <div className="col-md-2">
-            <label className="fw-bold mb-1">Skills</label>
-            <input type="text" className="form-control" value={skills} onChange={e => setSkills(e.target.value)} placeholder="e.g. Nursing" />
-          </div>
-          <div className="col-md-2">
-            <label className="fw-bold mb-1">Category</label>
-            <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
-              <option value="">Select</option>
-              <option value="Nurse">Nurse</option>
-              <option value="Physiotherapist">Physiotherapist</option>
-              <option value="Others">Others</option>
-            </select>
-          </div>
-          <div className="col-md-3">
-            <label className="fw-bold mb-1">From</label>
-            <input type="datetime-local" className="form-control" value={fromDate} onChange={e => setFromDate(e.target.value)} />
-          </div>
-          <div className="col-md-3">
-            <label className="fw-bold mb-1">To</label>
-            <input type="datetime-local" className="form-control" value={toDate} onChange={e => setToDate(e.target.value)} />
-          </div>
+  {/* State */}
+  <div className="col-12 col-md">
+    <div className="form-floating position-relative">
+      <i className="bi bi-geo-alt-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+        style={{ pointerEvents: "none", zIndex: 2 }}
+      ></i>
+
+      <select
+        className="form-select ps-5"
+        value={selectedState}
+        onChange={e => setSelectedState(e.target.value)}
+      >
+        <option value="">State</option>
+        {states.map(st => (
+          <option key={st.name} value={st.name}>{st.name}</option>
+        ))}
+      </select>
+      <label className="ps-4">State</label>
+    </div>
+  </div>
+
+  {/* City */}
+  <div className="col-12 col-md">
+    <div className="form-floating position-relative">
+      <i className="bi bi-geo-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+        style={{ pointerEvents: "none", zIndex: 2 }}
+      ></i>
+
+      <input
+        type="text"
+        className="form-control ps-5"
+        placeholder="City"
+      />
+      <label className="ps-4">City</label>
+    </div>
+  </div>
+
+  {/* Skills */}
+  <div className="col-12 col-md">
+    <div className="form-floating position-relative">
+      <i className="bi bi-airplane-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+        style={{ pointerEvents: "none", zIndex: 2 }}
+      ></i>
+
+      <input
+        type="text"
+        className="form-control ps-5"
+        value={skills}
+        onChange={e => setSkills(e.target.value)}
+        placeholder="e.g. Nursing"
+      />
+      <label className="ps-4">Skills</label>
+    </div>
+  </div>
+
+  {/* Category */}
+  <div className="col-12 col-md">
+    <div className="form-floating position-relative">
+      <i className="bi bi-airplane-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+        style={{ pointerEvents: "none", zIndex: 2 }}
+      ></i>
+
+      <select
+        className="form-select ps-5"
+        value={category}
+        onChange={e => setCategory(e.target.value)}
+      >
+        <option value="">Select</option>
+        <option value="Nurse">Nurse</option>
+        <option value="Physiotherapist">Physiotherapist</option>
+        <option value="Others">Others</option>
+      </select>
+      <label className="ps-4">Category</label>
+    </div>
+  </div>
+
+</div>
+
+         {showMoreFilters && (
+  <div className="row mt-4 g-0">
+
+          <div className="col-12 col-md">
+             <div className="form-floating mb-3 position-relative">
+              <i className="bi bi-calendar3 fs-18 position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                style={{ pointerEvents: "none" }}
+              ></i>
+            <input type="datetime-local" className="form-control ps-5" value={fromDate} onChange={e => setFromDate(e.target.value)} />
+           <label className="pl-3">From</label>
+          </div></div>
+          <div className="col-12 col-md">
+            <div className="form-floating mb-3 position-relative">
+              <i className="bi bi-calendar3 fs-18 position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                style={{ pointerEvents: "none" }}
+              ></i>
+            <input type="datetime-local" className="form-control ps-5" value={toDate} onChange={e => setToDate(e.target.value)} />
+           <label className="pl-3">To</label>
+          </div></div>
         </div>
-        <div className="d-flex justify-content-end mt-3">
-          <button className="btn btn-primary" onClick={searchProfessionals} disabled={searching}>{searching ? "Searching..." : "Search"}</button>
-        </div>
+)}
+       <div className="d-flex align-items-center mt-4 gap-3 mb-3 float-end">
+  <button 
+    className="btn btn-outline-primary"
+    onClick={() => setShowMoreFilters(prev => !prev)}
+  >
+    <i className="bi bi-plus-circle me-1"></i>
+    {showMoreFilters ? "Hide Filters" : "More Filters"}
+  </button>
+
+  <button 
+    className="btn btn-primary" 
+    onClick={searchProfessionals} 
+    disabled={searching}
+  >
+    {searching ? "Searching..." : "Search"}
+  </button>
+</div>
+
       </div>
 
       {/* Results Table */}
