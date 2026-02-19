@@ -281,7 +281,9 @@ const Patient = () => {
       <input
         type="text"
         className="form-control ps-5"
-        placeholder="City"
+        placeholder="City"  
+        value={city}
+        onChange={e => setCity(e.target.value)}
       />
       <label className="ps-4">City</label>
     </div>
