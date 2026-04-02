@@ -40,7 +40,7 @@ const TransactionHistory = () => {
 
     return (
         <div className="container mt-4">
-            <h4 className="fw-semibold mb-4">Transaction History</h4>
+            <h4 className="fw-semibold mb-4 text-blue">Transaction History</h4>
 
             {transactions.length === 0 ? (
                 <p className="text-muted">No transactions found</p>

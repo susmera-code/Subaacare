@@ -3,38 +3,67 @@ import jsPDF from "jspdf";
 const generatePaymentInvoice = (appt) => {
   const doc = new jsPDF();
 
-  doc.setFontSize(18);
-  doc.text("PAYMENT INVOICE", 105, 20, null, null, "center");
+  // ---------- Header ----------
+  doc.setFontSize(22);
+  doc.setFont("helvetica", "bold");
+  doc.text("PAYMENT INVOICE", 105, 20, { align: "center" });
 
   doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
   doc.text(`Invoice No: PAY-${appt.id}`, 20, 35);
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 35);
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 160, 35);
 
-  doc.line(20, 40, 190, 40);
+  doc.line(20, 40, 190, 40); // horizontal line
 
-  doc.text(`Professional: ${appt.professionals?.full_name}`, 20, 55);
-  doc.text(`Payment ID: ${appt.razorpay_payment_id}`, 20, 65);
+  // ---------- Professional & Payment Info ----------
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.text("Professional Details", 20, 50);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Name: ${appt.professionals?.full_name || "-"}`, 20, 58);
 
+  doc.setFont("helvetica", "bold");
+  doc.text("Payment Details", 20, 70);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Payment ID: ${appt.razorpay_payment_id || "-"}`, 20, 78);
   doc.text(
-    `From: ${new Date(appt.from_datetime).toLocaleString()}`,
+    `Appointment Date: ${new Date(appt.from_datetime).toLocaleString()}`,
     20,
-    80
+    88
   );
 
-  const amount = 500; // replace with real value
+  // ---------- Table Header ----------
+  const tableTop = 105;
+  doc.setFont("helvetica", "bold");
+  doc.text("Description", 20, tableTop);
+  doc.text("Amount (Rs.)", 160, tableTop, { align: "right" });
+  doc.line(20, tableTop + 2, 190, tableTop + 2);
 
-  doc.text("Description", 20, 105);
-  doc.text("Amount", 160, 105);
-  doc.line(20, 108, 190, 108);
+  // ---------- Table Row ----------
+  const amount = 500; // replace with actual value
+  const rowY = tableTop + 15;
+  doc.setFont("helvetica", "normal");
+  doc.text("Appointment Fee", 20, rowY);
+  doc.text(`${amount}`, 160, rowY, { align: "right" });
 
-  doc.text("Appointment Fee", 20, 120);
-  doc.text(`₹ ${amount}`, 160, 120);
+  doc.line(20, rowY + 5, 190, rowY + 5); // line after row
 
-  doc.line(20, 130, 190, 130);
+  // ---------- Total ----------
+  doc.setFont("helvetica", "bold");
+  doc.text("Total Paid:", 20, rowY + 20);
+  doc.text(`Rs. ${amount}`, 160, rowY + 20, { align: "right" });
 
-  doc.text("Total Paid:", 20, 140);
-  doc.text(`₹ ${amount}`, 160, 140);
+  // ---------- Footer ----------
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "italic");
+  doc.text(
+    "Thank you for your payment! For any queries, contact support@example.com",
+    105,
+    280,
+    { align: "center" }
+  );
 
+  // Save PDF
   doc.save(`Payment_Invoice_${appt.id}.pdf`);
 };
 
