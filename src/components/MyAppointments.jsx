@@ -255,7 +255,7 @@ const AppointmentCard = ({ appt, editingId, startEdit, saveEdit, openCancelModal
         "bg-danger";
 
   return (
-    <div className="card shadow-sm border-0 p-0" style={{ borderRadius: "12px" }}>
+    <div className="card shadow-sm border-0 p-0 mt-2" style={{ borderRadius: "12px" }}>
       <div className="card-body row gy-3 align-items-start">
         {/* LEFT SIDE */}
         <div className="d-flex gap-3 col-md-5 text-start align-items-center border-end">

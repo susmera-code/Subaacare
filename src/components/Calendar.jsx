@@ -63,9 +63,9 @@ const BookingModal = ({ show, onClose, professional, onConfirm }) => {
 
           </div>
           <div className="modal-footer">
-            <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+            <button className="btn btn-secondary fs-14" onClick={onClose}>Cancel</button>
             <button
-              className="btn btn-primary"
+              className="btn btn-primary fs-14"
               onClick={() => onConfirm(selectedDate, selectedSlot)}
               disabled={selectedSlot === null}
             >

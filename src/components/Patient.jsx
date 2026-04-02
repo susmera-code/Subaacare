@@ -292,7 +292,7 @@ const Patient = () => {
   {/* Skills */}
   <div className="col-12 col-md">
     <div className="form-floating position-relative">
-      <i className="bi bi-airplane-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+      <i className="bi-heart-pulse-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
         style={{ pointerEvents: "none", zIndex: 2 }}
       ></i>
 
@@ -310,7 +310,7 @@ const Patient = () => {
   {/* Category */}
   <div className="col-12 col-md">
     <div className="form-floating position-relative">
-      <i className="bi bi-airplane-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+      <i className="bi bi-activity position-absolute fs-18 top-50 start-0 translate-middle-y ps-3 text-muted"
         style={{ pointerEvents: "none", zIndex: 2 }}
       ></i>
 
@@ -353,7 +353,7 @@ const Patient = () => {
 )}
        <div className="d-flex align-items-center mt-4 gap-3 mb-3 float-end">
   <button 
-    className="btn btn-outline-primary"
+    className="btn btn-outline-primary fs-15"
     onClick={() => setShowMoreFilters(prev => !prev)}
   >
     <i className="bi bi-plus-circle me-1"></i>
@@ -361,7 +361,7 @@ const Patient = () => {
   </button>
 
   <button 
-    className="btn btn-primary" 
+    className="btn btn-primary fs-15" 
     onClick={searchProfessionals} 
     disabled={searching}
   >

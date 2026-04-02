@@ -315,7 +315,7 @@ const ProfessionalDashboard = () => {
                   <tbody>
                     {upcomingAppointments.length === 0 ? (
                       <tr>
-                        <td colSpan="4" className="text-center">No upcoming appointments</td>
+                        <td colSpan="5" className="text-center">No upcoming appointments</td>
                       </tr>
                     ) : (
                       upcomingAppointments.map((appt) => {

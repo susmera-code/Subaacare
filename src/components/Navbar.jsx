@@ -2,6 +2,7 @@ import { useAuth } from "./useAuth";
 import { logout } from "./logout";
 import Subaa_Logo from "../assets/Subaa_Logo.png";
 import { supabase } from './supabaseClient';
+
 const Navbar = () => {
     const { user, role, loading } = useAuth();
 
@@ -135,7 +136,16 @@ const Navbar = () => {
                                             <li><hr className="dropdown-divider" /></li></>)}
                                     {user && role === "patient" && (
                                         <><li><a className="dropdown-item" href="/patientprofile">My Profile</a></li>
-                                            <li><hr className="dropdown-divider" /></li></>)}
+                                            <li><hr className="dropdown-divider" /></li>
+                                            <li>
+                                                <a className="dropdown-item"
+                                                    href="/transactions">
+                                                    Transaction History
+                                                </a>
+                                            </li> <li><hr className="dropdown-divider" /></li>
+                                        </>)
+
+                                    }
 
                                     <li>
                                         <button className="dropdown-item text-danger" onClick={logout}>

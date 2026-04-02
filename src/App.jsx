@@ -21,7 +21,7 @@ import MyAppointments from './components/MyAppointments';
 import PatientProfile from './components/PatientProfile';
 import Terms from './components/Terms';
 import AboutUs from './components/AboutUs';
-
+import TransactionHistory from "./components/TransactionHistory";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -69,6 +69,7 @@ useEffect(() => {
             <Route path="/myappointments" element={<MyAppointments />} />
             <Route path="/patientprofile" element={<PatientProfile />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/transactions" element={<TransactionHistory />} />
 
             {/* Professional dashboard */}
             <Route
