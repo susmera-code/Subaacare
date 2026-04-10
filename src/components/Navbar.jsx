@@ -78,6 +78,8 @@ const Navbar = () => {
                                 </li>
                                 <li className="nav-item">
                                     <a className="nav-link" href="/myappointments">My Appointments</a> </li>
+                                <li>
+                                    <a className="nav-link" href="/transactions"> Transaction History</a></li>
                             </>
                         )}
                         {user && role === "professional" && (
@@ -136,15 +138,8 @@ const Navbar = () => {
                                             <li><hr className="dropdown-divider" /></li></>)}
                                     {user && role === "patient" && (
                                         <><li><a className="dropdown-item" href="/patientprofile">My Profile</a></li>
-                                            <li><hr className="dropdown-divider" /></li>
-                                            <li>
-                                                <a className="dropdown-item"
-                                                    href="/transactions">
-                                                    Transaction History
-                                                </a>
-                                            </li> <li><hr className="dropdown-divider" /></li>
-                                        </>)
 
+                                        </>)
                                     }
 
                                     <li>
