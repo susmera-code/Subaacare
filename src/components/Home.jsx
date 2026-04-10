@@ -171,7 +171,7 @@ function Home() {
                                 <div className="d-flex flex-column text-start">
                                     <h5 className="fw-bold mb-3 text-blue fs-23">A Personal Turning Point</h5>
                                     <p>
-                                        When the founder’s father suffered a stroke, he lost his ability to speak and
+                                        When the founder's father suffered a stroke, he lost his ability to speak and
                                         experienced paralysis on the right side of his body.
                                         To support his recovery, the family transformed a one-bedroom home into a
                                         fully assisted care space, equipped with medical beds, mobility aids,
@@ -345,21 +345,9 @@ function Home() {
                         <h4 className="fw-bold mb-3 text-start text-blue">Contact us</h4>
                         <div className="card shadow-sm rounded-4 p-4 text-start">
                             <h5 className="fw-bold mb-3">  <i className="bi bi-check-circle-fill fs-18"></i> Questions?</h5>
-
-                            <div className="text-muted">
-                                <strong>Subaa Care</strong>
-                                <br />
-                                T3 – Niruthi Apartments
-                                <br />
-                                65A, Kaliamman Koil Street
-                                <br />
-                                Virugambakkam
-                                <br />
-                                Chennai – 600 092
-                            </div>
-                            <p className="mb-2 text-muted">📞 Call or WhatsApp</p>
-                            <h5 className="text-success fw-bold fs-15">+91 9739797720 </h5>
-                        </div>
+                            <div className="d-flex" style={{gap: "4rem"}}><div><p className="mb-2 text-muted">📞 Call or WhatsApp</p><h5 className="text-success fw-bold fs-15">+91 9739797720 </h5></div>
+                            <div><p className="mb-2 text-muted">📧 Email</p><h5 className="text-success fw-bold fs-15">Info@subaa.in</h5></div>
+                        </div></div>
                     </div>
                 </div>
             </div>
