@@ -48,8 +48,7 @@ const Navbar = () => {
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav ms-auto align-items-center">
-
+                    <ul className="navbar-nav ms-auto align-items-center" style={{gap:"10px"}}>
                         {/* Always visible */}
                         <li className="nav-item">
                             <a className="nav-link" href="/home">Home</a>
