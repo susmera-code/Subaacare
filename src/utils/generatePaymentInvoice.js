@@ -15,17 +15,29 @@ const generatePaymentInvoice = (appt) => {
 
   doc.line(20, 40, 190, 40); // horizontal line
 
-  // ---------- Professional & Payment Info ----------
+  // ---------- Patient Info ----------
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text("Professional Details", 20, 50);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Name: ${appt.professionals?.full_name || "-"}`, 20, 58);
+  doc.text("Patient Details", 20, 50);
 
+  doc.setFont("helvetica", "normal");
+
+  const patientName =
+    appt.patients?.full_name ||
+    appt.patient?.full_name ||
+    appt.patient_name ||
+    appt.full_name ||
+    "Patient";
+
+  doc.text(`Name: ${patientName}`, 20, 58);
+
+  // ---------- Payment Info ----------
   doc.setFont("helvetica", "bold");
   doc.text("Payment Details", 20, 70);
+
   doc.setFont("helvetica", "normal");
   doc.text(`Payment ID: ${appt.razorpay_payment_id || "-"}`, 20, 78);
+
   doc.text(
     `Appointment Date: ${new Date(appt.from_datetime).toLocaleString()}`,
     20,
@@ -42,11 +54,19 @@ const generatePaymentInvoice = (appt) => {
   // ---------- Table Row ----------
   const amount = 500; // replace with actual value
   const rowY = tableTop + 15;
+
+  const professionalName = appt.professionals?.full_name || "Professional";
+
   doc.setFont("helvetica", "normal");
-  doc.text("Appointment Fee", 20, rowY);
+  doc.text(
+    `Appointment fee for ${professionalName}`,
+    20,
+    rowY
+  );
+
   doc.text(`${amount}`, 160, rowY, { align: "right" });
 
-  doc.line(20, rowY + 5, 190, rowY + 5); // line after row
+  doc.line(20, rowY + 5, 190, rowY + 5);
 
   // ---------- Total ----------
   doc.setFont("helvetica", "bold");

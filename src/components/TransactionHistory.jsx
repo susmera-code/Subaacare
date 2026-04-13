@@ -29,7 +29,8 @@ const TransactionHistory = () => {
         payment_status,
         razorpay_payment_id,
         from_datetime,
-        professionals(full_name)
+        professionals(full_name),
+        patients (full_name)
       `)
             .eq("patient_id", user.id)
             .in("payment_status", ["paid", "refund initiated", "refunded"]) // ✅ FILTER ADDED

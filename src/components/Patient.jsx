@@ -20,7 +20,6 @@ const Patient = () => {
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
-  const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [city, setCity] = useState("");
 
@@ -30,18 +29,6 @@ const Patient = () => {
   const [fromDateTime, setFromDateTime] = useState("");
   const [toDateTime, setToDateTime] = useState("");
   const [availableSlots, setAvailableSlots] = useState({});
-
-  // Fetch India states
-  useEffect(() => {
-    fetch("https://countriesnow.space/api/v0.1/countries/states", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ country: "India" }),
-    })
-      .then(res => res.json())
-      .then(data => data?.data?.states && setStates(data.data.states))
-      .catch(err => console.error(err));
-  }, []);
 
   // Load user profile
   useEffect(() => {
@@ -258,15 +245,15 @@ const Patient = () => {
       ></i>
 
       <select
-        className="form-select ps-5"
-        value={selectedState}
-        onChange={e => setSelectedState(e.target.value)}
-      >
-        <option value="">State</option>
-        {states.map(st => (
-          <option key={st.name} value={st.name}>{st.name}</option>
-        ))}
-      </select>
+  className="form-select ps-5"
+  value={selectedState}
+  onChange={e => setSelectedState(e.target.value)}
+>
+  <option value="">State</option>
+  <option value="Bangalore">Bangalore</option>
+  <option value="Delhi">Delhi</option>
+  <option value="Chennai">Chennai</option>
+</select>
       <label className="ps-4">State</label>
     </div>
   </div>

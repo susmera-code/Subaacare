@@ -265,7 +265,7 @@ function Home() {
                                 <img
                                     src={noteIcon}
                                     alt="Transparancy"
-                                    style={{ width: '135px', height: '95px', objectFit: 'cover' }}
+                                    style={{ width: '120px', height: '87px', objectFit: 'cover' }}
                                 />
                                 <div className="d-flex flex-column text-start">
                                     <h5 className="fw-bold mb-3 text-blue fs-23">Care with Transparency</h5>
