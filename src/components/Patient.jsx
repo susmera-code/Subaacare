@@ -235,167 +235,169 @@ const Patient = () => {
       {/* Search Form */}
       <div className="mt-5">
         {error && <p className="text-danger">{error}</p>}
-       <div className="row text-start pb-1 search-form g-0">
+        <div className="row text-start pb-1 search-form g-0">
 
-  {/* State */}
-  <div className="col-12 col-md">
-    <div className="form-floating position-relative">
-      <i className="bi bi-geo-alt-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
-        style={{ pointerEvents: "none", zIndex: 2 }}
-      ></i>
-
-      <select
-  className="form-select ps-5"
-  value={selectedState}
-  onChange={e => setSelectedState(e.target.value)}
->
-  <option value="">State</option>
-  <option value="Bangalore">Bangalore</option>
-  <option value="Delhi">Delhi</option>
-  <option value="Chennai">Chennai</option>
-</select>
-      <label className="ps-4">State</label>
-    </div>
-  </div>
-
-  {/* City */}
-  <div className="col-12 col-md">
-    <div className="form-floating position-relative">
-      <i className="bi bi-geo-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
-        style={{ pointerEvents: "none", zIndex: 2 }}
-      ></i>
-
-      <input
-        type="text"
-        className="form-control ps-5"
-        placeholder="City"  
-        value={city}
-        onChange={e => setCity(e.target.value)}
-      />
-      <label className="ps-4">City</label>
-    </div>
-  </div>
-
-  {/* Skills */}
-  <div className="col-12 col-md">
-    <div className="form-floating position-relative">
-      <i className="bi-heart-pulse-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
-        style={{ pointerEvents: "none", zIndex: 2 }}
-      ></i>
-
-      <input
-        type="text"
-        className="form-control ps-5"
-        value={skills}
-        onChange={e => setSkills(e.target.value)}
-        placeholder="e.g. Nursing"
-      />
-      <label className="ps-4">Skills</label>
-    </div>
-  </div>
-
-  {/* Category */}
-  <div className="col-12 col-md">
-    <div className="form-floating position-relative">
-      <i className="bi bi-activity position-absolute fs-18 top-50 start-0 translate-middle-y ps-3 text-muted"
-        style={{ pointerEvents: "none", zIndex: 2 }}
-      ></i>
-
-      <select
-        className="form-select ps-5"
-        value={category}
-        onChange={e => setCategory(e.target.value)}
-      >
-        <option value="">Select</option>
-        <option value="Nurse">Nurse</option>
-        <option value="Physiotherapist">Physiotherapist</option>
-        <option value="Others">Others</option>
-      </select>
-      <label className="ps-4">Category</label>
-    </div>
-  </div>
-
-</div>
-
-         {showMoreFilters && (
-  <div className="row mt-4 g-0">
-
+          {/* State */}
           <div className="col-12 col-md">
-             <div className="form-floating mb-3 position-relative">
-              <i className="bi bi-calendar3 fs-18 position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
-                style={{ pointerEvents: "none" }}
+            <div className="form-floating position-relative">
+              <i className="bi bi-geo-alt-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                style={{ pointerEvents: "none", zIndex: 2 }}
               ></i>
-            <input type="datetime-local" className="form-control ps-5" value={fromDate} onChange={e => setFromDate(e.target.value)} />
-           <label className="pl-3">From</label>
-          </div></div>
+
+              <select
+                className="form-select ps-5"
+                value={selectedState}
+                onChange={e => setSelectedState(e.target.value)}
+              >
+                <option value="">State</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Chennai">Chennai</option>
+              </select>
+              <label className="ps-4">State</label>
+            </div>
+          </div>
+
+          {/* City */}
           <div className="col-12 col-md">
-            <div className="form-floating mb-3 position-relative">
-              <i className="bi bi-calendar3 fs-18 position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
-                style={{ pointerEvents: "none" }}
+            <div className="form-floating position-relative">
+              <i className="bi bi-geo-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                style={{ pointerEvents: "none", zIndex: 2 }}
               ></i>
-            <input type="datetime-local" className="form-control ps-5" value={toDate} onChange={e => setToDate(e.target.value)} />
-           <label className="pl-3">To</label>
-          </div></div>
+
+              <input
+                type="text"
+                className="form-control ps-5"
+                placeholder="City"
+                value={city}
+                onChange={e => setCity(e.target.value)}
+              />
+              <label className="ps-4">City</label>
+            </div>
+          </div>
+
+          {/* Skills */}
+          <div className="col-12 col-md">
+            <div className="form-floating position-relative">
+              <i className="bi-heart-pulse-fill position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                style={{ pointerEvents: "none", zIndex: 2 }}
+              ></i>
+
+              <input
+                type="text"
+                className="form-control ps-5"
+                value={skills}
+                onChange={e => setSkills(e.target.value)}
+                placeholder="e.g. Nursing"
+              />
+              <label className="ps-4">Skills</label>
+            </div>
+          </div>
+
+          {/* Category */}
+          <div className="col-12 col-md">
+            <div className="form-floating position-relative">
+              <i className="bi bi-activity position-absolute fs-18 top-50 start-0 translate-middle-y ps-3 text-muted"
+                style={{ pointerEvents: "none", zIndex: 2 }}
+              ></i>
+
+              <select
+                className="form-select ps-5"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+              >
+                <option value="">Select</option>
+                <option value="Nurse">Nurse</option>
+                <option value="Physiotherapist">Physiotherapist</option>
+                <option value="Others">Others</option>
+              </select>
+              <label className="ps-4">Category</label>
+            </div>
+          </div>
+
         </div>
-)}
-       <div className="d-flex align-items-center mt-4 gap-3 mb-3 float-end">
-  <button 
-    className="btn btn-outline-primary fs-15"
-    onClick={() => setShowMoreFilters(prev => !prev)}
-  >
-    <i className="bi bi-plus-circle me-1"></i>
-    {showMoreFilters ? "Hide Filters" : "More Filters"}
-  </button>
 
-  <button 
-    className="btn btn-primary fs-15" 
-    onClick={searchProfessionals} 
-    disabled={searching}
-  >
-    {searching ? "Searching..." : "Search"}
-  </button>
-</div>
+        {showMoreFilters && (
+          <div className="row mt-4 g-0">
+
+            <div className="col-12 col-md">
+              <div className="form-floating mb-3 position-relative">
+                <i className="bi bi-calendar3 fs-18 position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                  style={{ pointerEvents: "none" }}
+                ></i>
+                <input type="datetime-local" className="form-control ps-5" value={fromDate} onChange={e => setFromDate(e.target.value)} />
+                <label className="pl-3">From</label>
+              </div></div>
+            <div className="col-12 col-md">
+              <div className="form-floating mb-3 position-relative">
+                <i className="bi bi-calendar3 fs-18 position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"
+                  style={{ pointerEvents: "none" }}
+                ></i>
+                <input type="datetime-local" className="form-control ps-5" value={toDate} onChange={e => setToDate(e.target.value)} />
+                <label className="pl-3">To</label>
+              </div></div>
+          </div>
+        )}
+        <div className="d-flex align-items-center mt-4 gap-3 mb-3 float-end">
+          <button
+            className="btn btn-outline-primary fs-15"
+            onClick={() => setShowMoreFilters(prev => !prev)}
+          >
+            <i className="bi bi-plus-circle me-1"></i>
+            {showMoreFilters ? "Hide Filters" : "More Filters"}
+          </button>
+
+          <button
+            className="btn btn-primary fs-15"
+            onClick={searchProfessionals}
+            disabled={searching}
+          >
+            {searching ? "Searching..." : "Search"}
+          </button>
+        </div>
 
       </div>
 
       {/* Results Table */}
-      <table className="table table-striped table-bordered align-middle mt-4">
-        <thead className="table-primary">
-          <tr>
-            <th className="text-blue">#</th>
-            <th className="text-blue">Photo</th>
-            <th className="text-blue">Name</th>
-            <th className="text-blue">Skills</th>
-            <th className="text-blue">State</th>
-            <th className="text-blue">City</th>
-            <th className="text-blue">Role</th>
-            <th className="text-blue">Book</th>
-          </tr>
-        </thead>
-        <tbody>
-          {results.length === 0 ? <tr><td colSpan="8" className="text-center">No results found</td></tr> :
-            results.map((p, i) => (
-              <tr key={p.id}>
-                <td>{i + 1}</td>
-                <td className="text-center">{p.profile_photo ? <img src={getProfilePhotoUrl(p.profile_photo)} alt="Profile" width="50" height="50" style={{ borderRadius: "50%", objectFit: "cover" }} /> : <span className="text-muted">No Photo</span>}</td>
-                <td>{p.full_name}</td>
-                <td>
-                  {Array.isArray(p.skills) && p.skills.length > 0
-                    ? p.skills.join(", ")
-                    : <span className="text-muted">No skills</span>
-                  }
-                </td>
 
-                <td>{p.state}</td>
-                <td>{p.city}</td>
-                <td>{p.category}</td>
-                <td><button className="btn btn-sm btn-success" onClick={() => handleOpenModal(p)}>Book Appointment</button></td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
+      <div class="table-responsive w-100">
+        <table className="table table-striped table-bordered align-middle mt-4">
+          <thead className="table-primary">
+            <tr>
+              <th className="text-blue">#</th>
+              <th className="text-blue">Photo</th>
+              <th className="text-blue">Name</th>
+              <th className="text-blue">Skills</th>
+              <th className="text-blue">State</th>
+              <th className="text-blue">City</th>
+              <th className="text-blue">Role</th>
+              <th className="text-blue">Book</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.length === 0 ? <tr><td colSpan="8" className="text-center">No results found</td></tr> :
+              results.map((p, i) => (
+                <tr key={p.id}>
+                  <td>{i + 1}</td>
+                  <td className="text-center">{p.profile_photo ? <img src={getProfilePhotoUrl(p.profile_photo)} alt="Profile" width="50" height="50" style={{ borderRadius: "50%", objectFit: "cover" }} /> : <span className="text-muted">No Photo</span>}</td>
+                  <td>{p.full_name}</td>
+                  <td>
+                    {Array.isArray(p.skills) && p.skills.length > 0
+                      ? p.skills.join(", ")
+                      : <span className="text-muted">No skills</span>
+                    }
+                  </td>
 
+                  <td>{p.state}</td>
+                  <td>{p.city}</td>
+                  <td>{p.category}</td>
+                  <td><button className="btn btn-sm btn-success" onClick={() => handleOpenModal(p)}>Book Appointment</button></td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
       {/* Booking Modal */}
       <Modal show={modalOpen} onHide={() => setModalOpen(false)} centered>
         <Modal.Header closeButton>

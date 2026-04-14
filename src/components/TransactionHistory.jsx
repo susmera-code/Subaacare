@@ -46,6 +46,7 @@ const TransactionHistory = () => {
             {transactions.length === 0 ? (
                 <p className="text-muted">No transactions found</p>
             ) : (
+                <div class="table-responsive w-100">
                 <table className="table table-striped table-bordered mt-4">
                     <thead className="table-primary">
                         <tr>
@@ -91,6 +92,7 @@ const TransactionHistory = () => {
                         ))}
                     </tbody>
                 </table>
+                </div>
             )}
         </div>
     );

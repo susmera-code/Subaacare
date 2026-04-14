@@ -105,7 +105,7 @@ export default function Admin() {
   return (
     <div>
       <h2 className="mb-3">Professionals Approval</h2>
-      <div className="table-responsive">
+      <div className="table-responsive w-100">
         <table className="container table table-md" border="1" cellPadding="10">
           <thead>
             <tr>

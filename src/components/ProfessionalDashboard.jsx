@@ -301,7 +301,7 @@ const ProfessionalDashboard = () => {
               className="accordion-collapse collapse show"
               data-bs-parent="#appointmentsAccordion"
             >
-              <div className="accordion-body table-responsive">
+              <div className="accordion-body table-responsive w-100">
                 <table className="table table-bordered mb-0">
                   <thead>
                     <tr>
@@ -385,7 +385,7 @@ const ProfessionalDashboard = () => {
               className="accordion-collapse collapse"
               data-bs-parent="#appointmentsAccordion"
             >
-              <div className="accordion-body table-responsive">
+              <div className="accordion-body table-responsive w-100">
                 <table className="table table-bordered mb-0">
                   <thead>
                     <tr>
@@ -434,7 +434,7 @@ const ProfessionalDashboard = () => {
 
           {/* Upcoming / Current Availability */}
           <h4 className="fw-semibold mb-2 text-blue">Upcoming Availability</h4>
-          <div className="table-responsive mb-4">
+          <div className="table-responsive w-100 mb-4">
             <table className="table table-bordered">
               <thead>
                 <tr>
@@ -474,7 +474,7 @@ const ProfessionalDashboard = () => {
 
           {/* Past Availability */}
           <h4 className="fw-semibold mb-2 text-blue">Past Availability</h4>
-          <div className="table-responsive">
+          <div className="table-responsive w-100">
             <table className="table table-bordered">
               <thead>
                 <tr>
