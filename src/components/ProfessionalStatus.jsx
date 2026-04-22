@@ -68,7 +68,7 @@ export default function ProfessionalStatus() {
 
   return (
     <div>
-      <span className="fs-16 fw-semibold text-blue">Profile Status: </span>
+      <span className="fs-15 fw-semibold text-blue">Profile Status: </span>
       {badge}
 
       {status === "rejected" && rejectionReason && (

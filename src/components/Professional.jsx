@@ -130,8 +130,8 @@ const ProfessionalsRegister = () => {
         <div className="text-start fs-15">
           {/* My Profile */}
           <div id="profile">
-            <h2 className="text-center fw-semibold" style={{ color: "#063b84" }}>My Profile</h2>
-             {/* PROFILE STATUS CARD */}
+            <h2 className="text-center fw-semibold text-blue">My Profile</h2>
+            {/* PROFILE STATUS CARD */}
             {!profile?.profile_submitted || profile.status === "rejected" && (
               <div className="card mb-4 p-3 shadow-sm" style={{ borderRadius: "12px", background: "#fff3cdc9", borderColor: "#ece4b2" }}>
                 <div className="d-flex justify-content-between align-items-center">
@@ -154,9 +154,9 @@ const ProfessionalsRegister = () => {
             )}
             <div className="card shadow-sm border-0 mb-4 p-0" style={{ borderRadius: "12px" }}>
               {/* CARD HEADER */}
-              <div className="card-header bg-blue d-flex justify-content-between align-items-center border-bottom">
+              <div className="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
                 <div className="d-flex align-items-center gap-2">
-                  <i className="bi bi-person-circle text-primary fs-20"></i>
+                  <i className="bi bi-person-circle profile-icon text-primary"></i>
                   <h5 className="mb-0 fw-semibold text-blue">Basic Information</h5>
                 </div>
 
@@ -277,19 +277,38 @@ const ProfessionalsRegister = () => {
                         </div>
                       )}
                     </div>
-                    <input
+                    {/* <input
                       type="file"
                       className="fs-10"
                       accept="image/png,image/jpeg,image/jpg"
                       onChange={handlePhotoChange}
-                    />
+                    /> */}
+
+                    <div className="text-start">
+                      <input
+                        id="fileUpload"
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg"
+                        onChange={handlePhotoChange}
+                        className="d-none"
+                      />
+
+                      <label
+                        htmlFor="fileUpload"
+                        className="btn btn-primary gap-1 text-white d-inline-flex align-items-center"
+                        style={{ fontSize: "12px" }}
+                      >
+                        <i className="bi bi-arrow-repeat"></i>
+                        Upload / Change
+                      </label>
+                    </div>
                   </div>
 
                   {/* RIGHT: DETAILS */}
                   <div className="col-md-10">
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       {/* Left: Name */}
-                      <h4 className="fw-semibold text-blue mb-0">
+                      <h4 className="fw-semibold text-blue mb-0 fs-22">
                         {editBasic ? (
                           <input
                             className="form-control"
@@ -312,7 +331,7 @@ const ProfessionalsRegister = () => {
                       )}
                     </div>
 
-                    <div className="fs-16 text-blue">
+                    <div className="fs-15 text-blue">
                       {/* PHONE */}
                       <div className="mb-2 d-flex align-items-center gap-2">
                         <i className="bi bi-telephone text-primary"></i>
@@ -355,7 +374,7 @@ const ProfessionalsRegister = () => {
                   {/* CARD HEADER */}
                   <div className="card-header bg-blue d-flex justify-content-between align-items-center border-bottom">
                     <div className="d-flex align-items-center gap-2">
-                      <i className="bi bi-person-check text-primary fs-20"></i>
+                      <i className="bi bi-person-check text-primary profile-icon"></i>
                       <h5 className="mb-0 fw-semibold text-blue">Identity Verification</h5>
                     </div>
                   </div>
@@ -681,14 +700,14 @@ const ProfessionalsRegister = () => {
               <div className="row">
                 <div className="col-md-6  mb-3">
                   <div className="card p-0">
-                    <div className="card-header bg-blue d-flex align-items-center border-bottom">
-                      <i className="bi bi-person-check text-primary fs-20 me-2"></i>
+                    <div className="card-header d-flex bg-white align-items-center border-bottom">
+                      <i className="bi bi-person-check-fill text-primary profile-icon me-2"></i>
                       <h5 className="mb-0 fw-semibold text-blue">Identity Verification</h5>
                     </div>
 
-                    <div className="card-body fs-16">
+                    <div className="card-body fs-15">
                       {/* Aadhaar */}
-                      <div className="row fs-16">
+                      <div className="row fs-15">
                         <div className="col-md-6 d-flex gap-3 align-items-center">
                           <label className="fw-semibold">Aadhaar:</label>
                           <p className="text-blue mt-10 mb-10">{profile.aadhar}</p>
@@ -701,7 +720,7 @@ const ProfessionalsRegister = () => {
                           <p className="text-blue mt-10 mb-10">{profile.pan}</p>
                         </div>
                       </div>
-                      <div className="row fs-16">
+                      <div className="row fs-15">
                         {/* Address Proof */}
                         <div className="col-md-6 d-flex gap-3 align-items-center">
                           <label className="fw-semibold">Address Proof:</label>
@@ -715,14 +734,14 @@ const ProfessionalsRegister = () => {
                 </div>
                 <div className="col-md-6  mb-3">
                   <div className="card p-0">
-                    <div className="card-header bg-blue d-flex justify-content-between align-items-center border-bottom">
+                    <div className="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
                       <div className="d-flex align-items-center gap-2">
-                        <i className="bi bi-marker-tip text-primary fs-20"></i>
+                        <i className="bi bi-marker-tip text-primary profile-icon"></i>
                         <h5 className="mb-0 fw-semibold text-blue">Education & Experience</h5>
                       </div>
                     </div>
                     <div className="card-body">
-                      <div className="row fs-16">
+                      <div className="row fs-15">
                         <div className="col-md-6 d-flex gap-3 align-items-center">
                           <label className="fw-semibold">Qualification: </label>
                           <p className="text-blue mt-10 mb-10">{profile.qualification}</p>
@@ -731,7 +750,7 @@ const ProfessionalsRegister = () => {
                           <label className="fw-semibold">Institution: </label>
                           <p className="text-blue mt-10 mb-10">{profile.institution}</p>
                         </div></div>
-                      <div className="row fs-16">
+                      <div className="row fs-15">
                         <div className="col-md-6 d-flex gap-3 align-items-center">
                           <label className="fw-semibold">Experience: </label>
                           <p className="text-blue mt-10 mb-10">{profile.experience}</p>

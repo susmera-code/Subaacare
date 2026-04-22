@@ -95,7 +95,8 @@ textarea.form-control {
   height: 40px;
 }
 
-.btn-primary, .btn-outline-primary {
+.btn-primary,
+.btn-outline-primary {
   border-radius: 10px;
   height: 37px;
   font-weight: 600;
@@ -148,6 +149,10 @@ a {
 
 .fs-20 {
   font-size: 20px !important;
+}
+
+.fs-22 {
+  font-size: 22px !important;
 }
 
 .fs-23 {
@@ -399,9 +404,19 @@ p {
 }
 
 /* Calendar Style */
+.calendar-wrapper {
+    width: 400px;
+}
+
+.react-calendar {
+  width: 100% !important;
+  border-radius: 10px;
+  padding: 10px;
+}
+
 /* Round main calendar container */
 .react-calendar {
-  border-radius: 8px;
+
   /* Main 4 corners */
   overflow: hidden;
   /* Ensures inner content doesn't spill out */
@@ -463,4 +478,30 @@ p {
 
 .form-floating>label {
   padding: 0.8rem 3rem !important;
+}
+
+.profile-icon {
+  background: linear-gradient(to right, #b7ddff, white);
+  padding: 4px 9px 4px 8px;
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+  font-size: 22px;
+}
+
+label.btn-primary {
+  font-size: 12px !important;
+  height: 30px;
+  padding: 7px;
+  font-weight: 500 !important;
+  border-radius: 6px;
+}
+
+.time-slot .btn-outline-primary {
+  border-radius: 3px;
+  height: 30px;
+  font-weight: 500;
+}
+.btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

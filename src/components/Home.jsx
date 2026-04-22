@@ -345,9 +345,9 @@ function Home() {
                         <h4 className="fw-bold mb-3 text-start text-blue">Contact us</h4>
                         <div className="card shadow-sm rounded-4 p-4 text-start">
                             <h5 className="fw-bold mb-3">  <i className="bi bi-check-circle-fill fs-18"></i> Questions?</h5>
-                            <div className="d-flex" style={{gap: "4rem"}}><div><p className="mb-2 text-muted">📞 Call or WhatsApp</p><h5 className="text-success fw-bold fs-15">+91 9739797720 </h5></div>
-                            <div><p className="mb-2 text-muted">📧 Email</p><h5 className="text-success fw-bold fs-15">care@subaa.in</h5></div>
-                        </div></div>
+                            <div className="d-flex" style={{ gap: "4rem" }}><div><p className="mb-2 text-muted">📞 Call or WhatsApp</p><h5 className="text-success fw-bold fs-15">+91 9739797720 </h5></div>
+                                <div><p className="mb-2 text-muted">📧 Email</p><h5 className="text-success fw-bold fs-15">care@subaa.in</h5></div>
+                            </div></div>
                     </div>
                 </div>
             </div>

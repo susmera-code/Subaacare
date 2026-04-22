@@ -249,7 +249,7 @@ const ProfessionalDashboard = () => {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h6 className="modal-title fw-semibold">{editingId ? "Edit Availability" : "Add Availability"}</h6>
+                <h6 className="modal-title text-blue fw-semibold">{editingId ? "Edit Availability" : "Add Availability"}</h6>
                 <button className="btn-close" onClick={resetModal}></button>
               </div>
 
@@ -303,13 +303,13 @@ const ProfessionalDashboard = () => {
             >
               <div className="accordion-body table-responsive w-100">
                 <table className="table table-bordered mb-0">
-                  <thead>
+                  <thead className="table-primary">
                     <tr>
-                      <th>Patient Name</th>
-                      <th>From</th>
-                      <th>To</th>
-                      <th>Payment</th>
-                      <th>Actions / Status</th>
+                      <th className="text-blue">Patient Name</th>
+                      <th className="text-blue">From</th>
+                      <th className="text-blue">To</th>
+                      <th className="text-blue">Payment</th>
+                      <th className="text-blue">Actions / Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -387,12 +387,12 @@ const ProfessionalDashboard = () => {
             >
               <div className="accordion-body table-responsive w-100">
                 <table className="table table-bordered mb-0">
-                  <thead>
+                  <thead className="table-primary">
                     <tr>
-                      <th>Patient Name</th>
-                      <th>From</th>
-                      <th>To</th>
-                      <th>Status</th>
+                      <th className="text-blue">Patient Name</th>
+                      <th className="text-blue">From</th>
+                      <th className="text-blue">To</th>
+                      <th className="text-blue">Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -436,11 +436,11 @@ const ProfessionalDashboard = () => {
           <h4 className="fw-semibold mb-2 text-blue">Upcoming Availability</h4>
           <div className="table-responsive w-100 mb-4">
             <table className="table table-bordered">
-              <thead>
+              <thead className="table-primary">
                 <tr>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Actions</th>
+                  <th className="text-blue">From</th>
+                  <th className="text-blue">To</th>
+                  <th className="text-blue">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -476,11 +476,11 @@ const ProfessionalDashboard = () => {
           <h4 className="fw-semibold mb-2 text-blue">Past Availability</h4>
           <div className="table-responsive w-100">
             <table className="table table-bordered">
-              <thead>
+              <thead className="table-primary">
                 <tr>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Status</th>
+                  <th className="text-blue">From</th>
+                  <th className="text-blue">To</th>
+                  <th className="text-blue">Status</th>
                 </tr>
               </thead>
               <tbody>

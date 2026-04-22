@@ -53,7 +53,17 @@ const Patient = () => {
     const pad = (n) => n.toString().padStart(2, "0");
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
   };
+  const formatAMPM = (time) => {
+    const [hour, minute] = time.split(":");
 
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+
+    h = h % 12;
+    if (h === 0) h = 12;
+
+    return `${h}:${minute} ${ampm}`;
+  };
   const addDays = (date, days) => {
     const d = new Date(date);
     d.setDate(d.getDate() + days);
@@ -79,8 +89,8 @@ const Patient = () => {
 
     // 🚫 if selecting "to", block dates before selected "from"
     if (
-      selectionStep === "to" &&
       selectedDate.from &&
+      selectionStep === "to" &&
       tileDate < new Date(toDateKey(selectedDate.from))
     ) {
       return true;
@@ -127,27 +137,55 @@ const Patient = () => {
     if (!date) return [];
     const key = toDateKey(date);
     const slots = availableSlots[key] || [];
-    return slots.flatMap(slot => {
+    const uniqueTimes = new Set();
+
+    slots.forEach(slot => {
+
       const start = new Date(slot.from_datetime.replace(" ", "T"));
       const end = new Date(slot.to_datetime.replace(" ", "T"));
-      const times = [];
+
       const current = new Date(start);
+
       while (current <= end) {
-        times.push(`${current.getHours().toString().padStart(2, "0")}:${current.getMinutes().toString().padStart(2, "0")}`);
+
+        const time =
+          `${current.getHours().toString().padStart(2, "0")}:` +
+          `${current.getMinutes().toString().padStart(2, "0")}`;
+
+        uniqueTimes.add(time);
+
         current.setMinutes(current.getMinutes() + 30);
+
       }
-      return times;
+
     });
+
+    return Array.from(uniqueTimes).sort();
   };
 
   // Confirm booking
   const handleConfirmBooking = async () => {
-    if (!fromDateTime || !toDateTime) return alert("Please select from and to date & time");
+    if (!selectedDate.from || !selectedDate.to)
+      return alert("Please select From and To dates");
 
+    if (!fromDateTime || !toDateTime)
+      return alert("Please select From and To times");
     // Parse into Date objects
-    const from = new Date(fromDateTime);
-    const to = new Date(toDateTime);
+    const buildDateTime = (date, time) => {
 
+      const [h, m] = time.split(":");
+
+      const dt = new Date(date);
+
+      dt.setHours(h, m, 0, 0);
+
+      return dt;
+
+    };
+
+    const from = buildDateTime(selectedDate.from, fromDateTime);
+
+    const to = buildDateTime(selectedDate.to, toDateTime);
     if (isNaN(from.getTime()) || isNaN(to.getTime())) return alert("Invalid date/time selected");
     if (from >= to) return alert("From datetime must be before To datetime");
 
@@ -227,7 +265,16 @@ const Patient = () => {
     const { data } = supabase.storage.from("profile-photos").getPublicUrl(value);
     return data?.publicUrl || null;
   };
-
+  const groupSlots = (slots) => {
+    return {
+      Morning: slots.filter(t => parseInt(t.split(":")[0]) < 12),
+      Afternoon: slots.filter(t => {
+        const h = parseInt(t.split(":")[0]);
+        return h >= 12 && h < 17;
+      }),
+      Evening: slots.filter(t => parseInt(t.split(":")[0]) >= 17),
+    };
+  };
   return (
     <div className="container">
       <h2 className="text-blue fw-bold">Welcome, {profile.full_name}</h2>
@@ -340,10 +387,10 @@ const Patient = () => {
         )}
         <div className="d-flex align-items-center mt-4 gap-3 mb-3 float-end">
           <button
-            className="btn btn-outline-primary fs-15"
+            className="btn btn-primary fs-15"
             onClick={() => setShowMoreFilters(prev => !prev)}
           >
-            <i className="bi bi-plus-circle me-1"></i>
+            <i className="bi bi-plus-circle me-1 fs-14"></i>
             {showMoreFilters ? "Hide Filters" : "More Filters"}
           </button>
 
@@ -401,59 +448,269 @@ const Patient = () => {
       {/* Booking Modal */}
       <Modal show={modalOpen} onHide={() => setModalOpen(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Book Appointment with {currentProfessional?.full_name}</Modal.Title>
+          <Modal.Title className="text-blue">Book Appointment with {currentProfessional?.full_name}</Modal.Title>
         </Modal.Header>
+        {/* Professional Info Header */}
+        <div className="d-flex align-items-center gap-3 p-3 border-bottom w-100 bg-light">
+          {/* Photo */}
+          <div>
+            {currentProfessional?.profile_photo ? (
+              <img
+                src={getProfilePhotoUrl(
+                  currentProfessional.profile_photo
+                )}
+                alt="Professional"
+                width="70"
+                height="70"
+                style={{
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "2px solid #dee2e6"
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: "70px",
+                  height: "70px",
+                  borderRadius: "50%",
+                  background: "#e9ecef",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                  color: "#6c757d"
+                }}
+              >
+                <i className="bi bi-person"></i>
+              </div>
+            )}
+          </div>
+
+          {/* Name + Location */}
+          <div>
+            <div className="fw-bold fs-5">
+              {currentProfessional?.full_name}
+            </div>
+
+            <div className="text-muted">
+              <i className="bi bi-geo-alt me-1"></i>
+              {currentProfessional?.city},{" "}
+              {currentProfessional?.state}
+            </div>
+
+            <div className="text-muted small">
+              {currentProfessional?.category}
+            </div>
+
+          </div>
+
+        </div>
         <Modal.Body>
           {Object.keys(availableSlots).length === 0 ? <p>No available slots</p> :
             <>
               {selectionStep !== "done" && (
-                <div className="row">
-                  <div className="col-md-9">
+                <div className="d-flex flex-column align-items-center">
+
+                  {/* Calendar */}
+
+                  <div className="mb-4 calendar-wrapper">
+                    <label className="fw-bold mb-2">
+                      Select Date
+                    </label>
+                      {selectedDate.from && !selectedDate.to && (
+                    <div className="alert fs-14 alert-info py-2">
+                      Please select <strong>To Date</strong> to continue
+                    </div>
+                  )}
                     <Calendar
                       value={selectionStep === "from" ? selectedDate.from : selectedDate.to}
                       onChange={(date) => {
-                        setSelectedDate(prev => selectionStep === "from" ? { ...prev, from: date } : { ...prev, to: date });
-                        selectionStep === "from" ? setFromDateTime("") : setToDateTime("");
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        if (date < today) {
+                          alert("Past dates are not allowed");
+                          return;
+                        }
+
+                        // Select FROM
+                        if (selectionStep === "from") {
+
+                          setSelectedDate({
+                            from: date,
+                            to: null
+                          });
+
+                          setFromDateTime("");
+                          setToDateTime("");
+                          setSelectionStep("to");
+
+                          return;
+                        }
+
+                        // Select TO
+                        if (selectionStep === "to") {
+
+                          if (date < selectedDate.from) {
+                            alert("To date cannot be earlier than From date");
+                            return;
+                          }
+
+                          setSelectedDate(prev => ({
+                            ...prev,
+                            to: date
+                          }));
+
+                          setFromDateTime("");
+                          setToDateTime("");
+
+                          return;
+                        }
                       }}
                       tileDisabled={tileDisabled}
                       tileClassName={tileClassName}
                     />
                   </div>
-                  <div className="col-md-3">
-                    {selectedDate[selectionStep] && (
-                      <>
-                        <label className="fw-bold">{selectionStep === "from" ? "From Time" : "To Time"}</label>
-                        <select className="form-select" value="" onChange={(e) => {
-                          const time = e.target.value;
-                          const [h, m] = time.split(":");
-                          const dt = new Date(selectedDate[selectionStep]);
-                          dt.setHours(h, m, 0, 0);
-                          const formatted = formatLocalDateTime(dt);
-                          if (selectionStep === "from") { setFromDateTime(formatted); setSelectionStep("to"); }
-                          else { setToDateTime(formatted); setSelectionStep("done"); }
-                        }}>
-                          <option value="">Select</option>
-                          {getAvailableTimesForDate(selectedDate[selectionStep]).map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                      </>
+                
+                  <div >
+                    {selectedDate.from && selectedDate.to && (
+                      <div className="w-100 d-flex gap-5">
+                        {/* FROM TIME */}
+                        <div className="mb-3">
+                          <label className="form-label fs-15">From Time</label>
+                          <select
+                            className="form-select fs-14"
+                            value={fromDateTime}
+                            onChange={(e) => {
+                              const time = e.target.value;
+                              setFromDateTime(time);
+                            }}
+                          >
+                            <option value="" className="text-muted placeholder-custom">
+                              Select From Time
+                            </option>
+
+                            {getAvailableTimesForDate(selectedDate.from)
+                              .map(t => (
+
+                                <option key={t} value={t}>
+
+                                  {formatAMPM(t)}
+
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        {/* TO TIME */}
+                        <div>
+                          <label className="form-label fs-15">To Time</label>
+                          <select
+                            className="form-select fs-14"
+                            value={toDateTime}
+                            onChange={(e) => {
+  const time = e.target.value;
+
+  // ❌ If FROM not selected → show error
+  if (!fromDateTime) {
+    alert("Please select From Time first");
+    return;
+  }
+
+  // ❌ Validate order
+  if (time <= fromDateTime) {
+    alert("To time must be after From time");
+    return;
+  }
+
+  // ✅ Valid 
+  setToDateTime(time);
+  setSelectionStep("done");
+}}>
+                            <option value="">
+                              Select To Time
+                            </option>
+
+                            {getAvailableTimesForDate(selectedDate.to)
+                              .map(t => (
+                                <option key={t} value={t}>
+                                  {formatAMPM(t)}
+                                </option>
+                              ))}
+
+                          </select>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
               )}
               {fromDateTime && toDateTime && (
-                <div className="mt-3">
-                  <label className="fw-bold">Selected Appointment</label>
-                  <input type="text" className="form-control mb-2" value={fromDateTime} readOnly />
-                  <input type="text" className="form-control" value={toDateTime} readOnly />
+                <div className="p-3 rounded" style={{ background: "#f1f5f9" }}>
+
+                  <h5 className="fw-bold mb-3">Appointment Details</h5>
+
+                  {/* Date */}
+                  <div className="d-flex align-items-center mb-2">
+                    <i className="bi bi-calendar3 me-2 text-primary"></i>
+                    <div>
+                      <div>
+                        {selectedDate.from?.toDateString()}
+                        {selectedDate.to &&
+                          selectedDate.to !== selectedDate.from &&
+                          ` → ${selectedDate.to.toDateString()}`}
+                      </div>
+                      <small className="text-muted">Appointment date</small>
+                    </div>
+                  </div>
+
+                  {/* Time */}
+                  <div className="d-flex align-items-center mb-2">
+                    <i className="bi bi-clock me-2 text-primary"></i>
+                    <div>
+                      <div>
+                        {formatAMPM(fromDateTime)} → {formatAMPM(toDateTime)}
+                      </div>
+                      <small className="text-muted">Appointment time</small>
+                    </div>
+                  </div>
+
+                  {/* Fee (optional static or dynamic) */}
+                  <div className="d-flex align-items-center mt-3">
+                    <i className="bi bi-currency-rupee me-2 text-primary"></i>
+                    <div>
+                      <div className="fw-bold">₹500</div>
+                      <small className="text-muted">Consultation fee</small>
+                    </div>
+                  </div>
+
                 </div>
               )}
             </>}
         </Modal.Body>
         <Modal.Footer>
+          {selectionStep === "done" && (
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => {
+                setSelectionStep("to"); // go back but KEEP data
+              }}
+            >Back
+            </button>
+          )}
           <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
           {/* Show Confirm only if slots exist */}
           {Object.keys(availableSlots).length > 0 && (
-            <Button variant="primary" onClick={handleConfirmBooking}>Confirm Booking</Button>
+            <Button
+              variant="primary"
+              onClick={handleConfirmBooking}
+              disabled={
+                !selectedDate.from ||
+                !selectedDate.to ||
+                !fromDateTime ||
+                !toDateTime
+              }
+            >Confirm Booking</Button>
           )}
         </Modal.Footer>
       </Modal>
