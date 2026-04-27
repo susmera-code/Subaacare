@@ -81,7 +81,7 @@ textarea.form-control {
 
 .login-card {
   width: 100%;
-  max-width: 350px;
+  max-width: 400px;
   border-radius: 18px;
 }
 
@@ -109,8 +109,8 @@ a {
 .input-with-icon i {
   position: absolute;
   right: 15px;
-  bottom: 7px;
-  font-size: 15px;
+  bottom: 4px;
+  font-size: 17px;
   color: #6c757d;
   pointer-events: none;
 }
@@ -504,4 +504,28 @@ label.btn-primary {
 .btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+.table-bordered>:not(caption)>*>* {
+    border-width: 1px var(--bs-border-width) !important;
+    border-color: #94c4ee !important;
+}
+.search-form{
+  gap: 15px;
+
+  & .form-control,
+  & .form-select {
+    border-radius: 5px;
+  }
 }

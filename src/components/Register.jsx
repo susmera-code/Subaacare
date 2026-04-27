@@ -85,7 +85,7 @@ export default function Register() {
                     className=" form-control placeholder-custom"
                     placeholder="Enter full name"
                   />
-                  <i className="bi bi-person-fill"></i>
+                  <i className="bi bi-person"></i>
                 </div>
                 <small className="error" id="fullNameError"></small>
               </div>
@@ -99,7 +99,7 @@ export default function Register() {
                     className="form-control placeholder-custom"
                     placeholder="Enter email"
                   />
-                  <i className="bi bi-envelope-fill"></i>
+                  <i className="bi bi-envelope"></i>
                 </div>
                 <small className="error" id="emailError"></small>
               </div>
@@ -114,10 +114,76 @@ export default function Register() {
                     className="form-control w-60 placeholder-custom"
                     placeholder="Phone" maxLength="10"
                   />
-                  <i className="bi bi-telephone-fill text-gray-500"></i>
+                  <i className="bi bi-telephone text-gray-500"></i>
                 </div>
                 <small className="error" id="phoneError"></small>
               </div>
+
+{/* Address + City */}
+<div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
+  <div className="w-50">
+    <label className="fw-bold mb-1">Address</label>
+    <div className="position-relative">
+      <input
+        type="text"
+        id="address"
+        className="form-control placeholder-custom"
+        placeholder="Enter address"
+      />
+      <i className="bi bi-geo-alt"></i>
+    </div>
+    <small className="error" id="addressError"></small>
+  </div>
+
+  <div className="w-50">
+    <label className="fw-bold mb-1">City</label>
+    <div className="position-relative">
+      <input
+        id="city"
+        className="form-control placeholder-custom"
+        type="text"
+        placeholder="Enter city"
+      />
+      <i className="bi bi-buildings"></i>
+    </div>
+    <small className="error" id="cityError"></small>
+  </div>
+</div>
+
+{/* State + Pincode */}
+<div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
+  <div className="w-50">
+    <label className="fw-bold mb-1">State</label>
+
+    <select
+      id="state"
+      value={selectedState}
+      onChange={(e) => setSelectedState(e.target.value)}
+      className="form-select w-100 fs-14"
+    >
+      <option value="">Select</option>
+      {states.map((st) => (
+        <option key={st.name} value={st.name}>
+          {st.name}
+        </option>
+      ))}
+    </select>
+
+    <small className="error" id="stateError"></small>
+  </div>
+
+  <div className="w-50">
+    <label className="fw-bold mb-1">Pincode</label>
+    <input
+      id="pincode"
+      className="form-control w-100 placeholder-custom"
+      placeholder="Enter pincode"
+      type="text"
+      maxLength="6"
+    />
+    <small className="error" id="pincodeError"></small>
+  </div>
+</div>
 
               {/*  Password */}
               <PasswordInput
@@ -192,8 +258,9 @@ export default function Register() {
 
         : <div className="login-container d-flex align-items-center justify-content-center input-with-icon">
           <div className="login-card p-4 shadow-lg rounded-4 bg-white">
+            <i class="bi bi-person-plus"></i>
             <h3 className="text-center mb-1 fw-bold text-primary">Register</h3>
-            <p className="fs-12 mb-3 login-message">Welcome to Heathcare. Please login to your account.</p>
+            <p className="fs-12 mb-3 login-message text-blue">Welcome to Heathcare. Please login to your account.</p>
             <div id="formError" className="text-danger fs-14"></div>
             {/* Full Name */}
             <div className="mb-3 position-relative text-start fs-14">
@@ -204,7 +271,7 @@ export default function Register() {
                   className=" form-control placeholder-custom"
                   placeholder="Enter full name"
                 />
-                <i className="bi bi-person-fill"></i>
+                <i className="bi bi-person"></i>
               </div>
               <small className="error" id="proFullNameError"></small>
             </div>
@@ -217,7 +284,7 @@ export default function Register() {
                   type="email" id="proEmail"
                   className="form-control placeholder-custom"
                   placeholder="Enter email" />
-                <i className="bi bi-envelope-fill"></i>
+                <i className="bi bi-envelope"></i>
               </div>
               <small className="error" id="proEmailError"></small>
             </div>
@@ -232,12 +299,38 @@ export default function Register() {
                   className="form-control w-60 placeholder-custom"
                   placeholder="Phone" maxLength="10"
                 />
-                <i className="bi bi-telephone-fill text-gray-500"></i>
+                <i className="bi bi-telephone text-gray-500"></i>
               </div>
               <small className="error" id="proPhoneError"></small>
             </div>
 
-            {/* State and City field */}
+            {/* Address+City */}
+            <div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
+              <div className="w-50">
+                <div className="mb-3 position-relative text-start fs-14">
+                  <label className="fw-bold mb-1">Address</label>
+                  <div className="position-relative">
+                    <input
+                      type="text" id="proAddress"
+                      className="form-control placeholder-custom"
+                      placeholder="Enter address" />
+                    <i class="bi bi-geo-alt"></i>
+                  </div>
+                  <small className="error" id="proAddressError"></small>
+                </div></div>
+
+              {/* City field */}
+              <div className="w-50">
+                <label className="fw-bold mb-1">City</label>
+                <div className="position-relative">
+                  <input id="city" className="form-control placeholder-custom" type="text" placeholder="Enter city" />
+                  <i class="bi bi-buildings"></i>
+                </div>
+                <small className="error" id="cityError"></small>
+              </div>
+            </div>
+
+            {/* State and pincode field */}
             <div className="mb-3 d-flex position-relative text-start fs-14 gap-2">
               <div className="w-50"><label className="fw-bold mb-1">State</label>
                 <select
@@ -256,10 +349,11 @@ export default function Register() {
 
                 <small className="error" id="stateError"></small>
               </div>
-              {/* City field */}
-              <div className="w-50"><label className="fw-bold mb-1">City</label>
-                <input id="city" className="form-control w-100" type="text" />
-                <small className="error" id="cityError"></small>
+              {/* Pincode field */}
+              <div className="w-50"><label className="fw-bold mb-1">Pincode</label>
+                <input id="pincode" className="form-control w-100 placeholder-custom"
+                  placeholder="Enter pincode" type="text" maxLength="6" />
+                <small className="error" id="pincodeError"></small>
               </div>
             </div>
 

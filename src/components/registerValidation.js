@@ -89,6 +89,10 @@ export function initRegisterValidation(isProfessional) {
       "fullName",
       "email",
       "phone",
+      "address",
+      "city",
+      "state",
+      "pincode",
       "password",
       "confirmPassword",
     ]);
@@ -104,12 +108,16 @@ export function initRegisterValidation(isProfessional) {
       const fullName = document.getElementById("fullName").value.trim();
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const city = document.getElementById("city").value.trim();
+      const state = document.getElementById("state").value;
+      const pincode = document.getElementById("pincode").value.trim();
       const password = document.getElementById("password").value;
       const confirmPassword =
         document.getElementById("confirmPassword").value;
       const termsChecked = document.getElementById("termsPatient").checked;
 
-      if (!fullName || !email || !phone || !password || !confirmPassword) {
+      if (!fullName || !email || !phone || !address || !city || !state ||!pincode || !password || !confirmPassword) {
         showFormError("All fields are required");
         return;
       }
@@ -154,6 +162,10 @@ export function initRegisterValidation(isProfessional) {
         full_name: fullName,
         email,
         phone,
+        address,
+        state,
+        city,
+        pincode,
         role: "patient",
       });
 
@@ -171,6 +183,8 @@ export function initRegisterValidation(isProfessional) {
       "proFullName",
       "proEmail",
       "proPhone",
+      "proAddress",
+      "pincode",
       "state",
       "city",
       "category",
@@ -190,6 +204,8 @@ export function initRegisterValidation(isProfessional) {
       const proFullName = document.getElementById("proFullName").value.trim();
       const email = document.getElementById("proEmail").value.trim();
       const proPhone = document.getElementById("proPhone").value.trim();
+      const proAddress = document.getElementById("proAddress").value.trim();
+      const pincode = document.getElementById("pincode").value.trim();
       const state = document.getElementById("state").value;
       const city = document.getElementById("city").value.trim();
       const category = document.getElementById("category").value;
@@ -203,8 +219,10 @@ export function initRegisterValidation(isProfessional) {
         !proFullName ||
         !email ||
         !proPhone ||
+        !proAddress ||
         !state ||
         !city ||
+        !pincode ||
         !finalCategory ||
         !password ||
         !confirmPassword
@@ -255,8 +273,10 @@ export function initRegisterValidation(isProfessional) {
           full_name: proFullName,
           email,
           phone: proPhone,
+          address: proAddress,
           state,
           city,
+          pincode,
           category: finalCategory,
           role: "professional",
           profile_submitted: false,

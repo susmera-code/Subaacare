@@ -276,7 +276,7 @@ const Patient = () => {
     };
   };
   return (
-    <div className="container">
+    <div className="container card">
       <h2 className="text-blue fw-bold">Welcome, {profile.full_name}</h2>
 
       {/* Search Form */}
@@ -365,7 +365,7 @@ const Patient = () => {
         </div>
 
         {showMoreFilters && (
-          <div className="row mt-4 g-0">
+          <div className="row mt-4 search-form">
 
             <div className="col-12 col-md">
               <div className="form-floating mb-3 position-relative">
@@ -518,11 +518,11 @@ const Patient = () => {
                     <label className="fw-bold mb-2">
                       Select Date
                     </label>
-                      {selectedDate.from && !selectedDate.to && (
-                    <div className="alert fs-14 alert-info py-2">
-                      Please select <strong>To Date</strong> to continue
-                    </div>
-                  )}
+                    {selectedDate.from && !selectedDate.to && (
+                      <div className="alert fs-14 alert-info py-2">
+                        Please select <strong>To Date</strong> to continue
+                      </div>
+                    )}
                     <Calendar
                       value={selectionStep === "from" ? selectedDate.from : selectedDate.to}
                       onChange={(date) => {
@@ -572,7 +572,7 @@ const Patient = () => {
                       tileClassName={tileClassName}
                     />
                   </div>
-                
+
                   <div >
                     {selectedDate.from && selectedDate.to && (
                       <div className="w-100 d-flex gap-5">
@@ -609,24 +609,24 @@ const Patient = () => {
                             className="form-select fs-14"
                             value={toDateTime}
                             onChange={(e) => {
-  const time = e.target.value;
+                              const time = e.target.value;
 
-  // ❌ If FROM not selected → show error
-  if (!fromDateTime) {
-    alert("Please select From Time first");
-    return;
-  }
+                              // ❌ If FROM not selected → show error
+                              if (!fromDateTime) {
+                                alert("Please select From Time first");
+                                return;
+                              }
 
-  // ❌ Validate order
-  if (time <= fromDateTime) {
-    alert("To time must be after From time");
-    return;
-  }
+                              // ❌ Validate order
+                              if (time <= fromDateTime) {
+                                alert("To time must be after From time");
+                                return;
+                              }
 
-  // ✅ Valid 
-  setToDateTime(time);
-  setSelectionStep("done");
-}}>
+                              // ✅ Valid 
+                              setToDateTime(time);
+                              setSelectionStep("done");
+                            }}>
                             <option value="">
                               Select To Time
                             </option>

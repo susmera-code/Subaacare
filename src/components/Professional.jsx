@@ -130,7 +130,7 @@ const ProfessionalsRegister = () => {
         <div className="text-start fs-15">
           {/* My Profile */}
           <div id="profile">
-            <h2 className="text-center fw-semibold text-blue">My Profile</h2>
+            <h2 className="text-center fw-semibold text-blue">Welcome, {profile?.full_name}</h2>
             {/* PROFILE STATUS CARD */}
             {!profile?.profile_submitted || profile.status === "rejected" && (
               <div className="card mb-4 p-3 shadow-sm" style={{ borderRadius: "12px", background: "#fff3cdc9", borderColor: "#ece4b2" }}>
@@ -372,7 +372,7 @@ const ProfessionalsRegister = () => {
               <>
                 <div className="card shadow-sm border-0 mb-4 p-0" ref={identityRef} style={{ borderRadius: "12px" }}>
                   {/* CARD HEADER */}
-                  <div className="card-header bg-blue d-flex justify-content-between align-items-center border-bottom">
+                  <div className="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
                     <div className="d-flex align-items-center gap-2">
                       <i className="bi bi-person-check text-primary profile-icon"></i>
                       <h5 className="mb-0 fw-semibold text-blue">Identity Verification</h5>
@@ -524,9 +524,9 @@ const ProfessionalsRegister = () => {
                 <div id="qualification">
                   <div className="card shadow-sm border-0 mb-4 p-0" style={{ borderRadius: "12px" }}>
                     {/* CARD HEADER */}
-                    <div className="card-header bg-blue d-flex justify-content-between align-items-center border-bottom">
+                    <div className="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
                       <div className="d-flex align-items-center gap-2">
-                        <i className="bi bi-marker-tip text-primary fs-20"></i>
+                        <i className="bi bi-marker-tip text-primary profile-icon"></i>
                         <h5 className="mb-0 fw-semibold text-blue">Education & Experience</h5>
                       </div>
                     </div>
